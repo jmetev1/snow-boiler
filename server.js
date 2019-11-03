@@ -1,10 +1,21 @@
-var express = require('express');
-var port = process.env.PORT || 3000;
-var app = express(),
-path = require('path'),
-publicDir = path.join(__dirname,'public');
+const express = require('express');
 
-app.use(express.static(publicDir))
+const port = process.env.PORT || 3000;
+app = express();
+path = require('path');
+
+const publicDir = path.join(__dirname, 'public');
+
+app.get('/login', (req, res) => {
+  res.send(JSON.stringify({ route: 'login' }));
+});
+app.get('/', (req, res) => {
+  res.send(JSON.stringify({ route: '/' }));
+});
+app.get('/other', (req, res) => {
+  res.send(JSON.stringify({ route: 'other' }));
+});
+app.use(express.static(publicDir));
 
 app.listen(port);
 module.exports = app;
