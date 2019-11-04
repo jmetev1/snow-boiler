@@ -7,14 +7,15 @@ let reload
 const http = require('http');
 const bodyParser = require('body-parser');
 const session = require('express-session')
-const dotenv = require('dotenv');
-dotenv.load();
-const development = process.env.NODE_ENV !== 'PRODUCTION'
+// const dotenv = require('dotenv');
+// dotenv.load();
+const development = false
+// const development = process.env.NODE_ENV !== 'PRODUCTION'
 console.log(13, development, process.env.NODE_ENV, process.env.NODE_ENV !== 'PRODUCTION')
-if (development) {
-  console.log('not prodc')
-  reload = require('reload');
-}
+// if (development) {
+//   console.log('not prodc')
+//   reload = require('reload');
+// }
 const util = require('./util');
 const port = process.env.PORT || 3000
 console.log(18, port)
@@ -29,9 +30,9 @@ app.use(session({
 app.use(bodyParser.json());
 console.log('env variables are', process.env.NODE_ENV, process.env.PORT)
 
-if (process.env.NODE_ENV !== "DEVELOPMENT") {
-  app.use(express.static('build'));
-}
+// if (process.env.NODE_ENV !== "DEVELOPMENT") {
+app.use(express.static('build'));
+// }
 const map = {
   "North Louisiana": "nl",
   "North Mississippi": "nm",
