@@ -7,8 +7,10 @@ let reload
 const http = require('http');
 const bodyParser = require('body-parser');
 const session = require('express-session')
+const dotenv = require('dotenv');
+dotenv.load();
 const development = process.env.NODE_ENV !== 'PRODUCTION'
-
+console.log(13, development, process.env.NODE_ENV, process.env.NODE_ENV !== 'PRODUCTION')
 if (development) {
   console.log('not prodc')
   reload = require('reload');
@@ -43,7 +45,11 @@ app.get('/login', cors(), (req, res) => {
     req.session.rep = 'nm'
   }
   console.log(req.session.rep)
-  res.send(JSON.stringify(req.session.rep))
+  const info = {
+    rep: req.session.rep,
+    env: process.env.NODE_ENV
+  }
+  res.send(JSON.stringify(info))
 })
 app.post('/login', cors(), (req, res) => {
   const rep = map[req.body.rep] || false;
