@@ -19,7 +19,10 @@ class AddClinic extends React.Component {
       method: "POST",
       body: JSON.stringify(this.state),
       headers: { 'Content-Type': 'application/json' }
-    }).then(r => r.json()).then(r => {
+    }).then(r => {
+      console.log(23, r)
+      r.json()
+    }).then(r => {
       console.log('add clinic', r)
     })
   }

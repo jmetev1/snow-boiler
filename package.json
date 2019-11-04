@@ -5,13 +5,13 @@
     "private": true,
     "scripts": {
         "start": "node server",
-        "localBuildRun": "NODE_ENV=PRODUCTION node server",
+        "localbuildrun": "NODE_ENV=PRODUCTION node server",
         "build": "node scripts/build.js",
         "dev": "PORT=3001 node scripts/start.js",
         "dev-all": "run-p dev dev-server",
         "dev-server": "supervisor -w util.js,server.js -- server.js",
         "test": "mocha --recursive tests --exit",
-        "testProd": "npm install && npm test",
+        "testprod": "npm install && npm test",
         "next": "npm run build && rm -rf node_modules && npm i --production"
     },
     "dependencies": {

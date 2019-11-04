@@ -11,8 +11,8 @@ class Authorized extends React.Component {
     super()
     this.state = {
       // show: AddProvider
-      show: AddVisit
-      // show: AddClinic
+      // show: AddVisit
+      show: AddClinic
       // show: History
     }
   }

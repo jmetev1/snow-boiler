@@ -1,17 +1,17 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+
 dotenv.load();
 const mongoDB = `mongodb://cain:${process.env.DBPW}@ds127783.mlab.com:27783/poolmap`;
 let databaseError;
 
 mongoose.connect(mongoDB, {
   connectTimeoutMS: 1000,
-}).then((suc) => { }, (err) => { databaseError = err; },
-);
+}).then((suc) => { }, (err) => { databaseError = err; });
 const db = mongoose.connection;
 db.on('error', (e) => {
   // console.log(13, e)
-  databaseError = e
+  databaseError = e;
   // console.error.call(console, 'MongoDB connection error:');
 });
 
@@ -22,13 +22,13 @@ const ProviderSchema = new Schema({
   ytdTotal: Number,
   type: String,
   clinic: String,
-  rep: String
-})
-const ProviderModel = mongoose.model("ProviderModel", ProviderSchema);
+  rep: String,
+});
+const ProviderModel = mongoose.model('ProviderModel', ProviderSchema);
 exports.addProvider = async (req, res, cb) => {
-  console.log('add provider', req)
+  console.log('add provider', req);
   const dbres = await ProviderModel.create(req, (err, suc) => {
-    if (err) console.log('err', err)
+    if (err) console.log('err', err);
     else console.log('in provider util success', suc);
     return suc;
   });
@@ -38,35 +38,37 @@ exports.providersByRep = async (rep) => {
   const allProviders = await ProviderModel.find({ rep });
   const providersByClinic = allProviders.reduce((a, c) => {
     const { clinic } = c;
-    if (a[clinic]) a[clinic].push(c)
-    else a[clinic] = [c]
+    if (a[clinic]) a[clinic].push(c);
+    else a[clinic] = [c];
     return a;
-  }, {})
-  return providersByClinic
-}
+  }, {});
+  return providersByClinic;
+};
 
 const ClinicSchema = new Schema({
   name: String,
   providers: [ProviderSchema],
   address: String,
-  rep: String
-})
-const ClinicModel = mongoose.model("ClinicModel", ClinicSchema)
+  rep: String,
+});
+const ClinicModel = mongoose.model('ClinicModel', ClinicSchema);
 exports.getClinic = async (rep) => {
-  const clinics = await ClinicModel.find({ rep: rep })
-  return clinics
+  const clinics = await ClinicModel.find({ rep });
+  return clinics;
 };
+exports.addVisit = async (req, res, cb) => VisitModel.create(req, (err, suc) => {
+  console.log(84, req);
+  return suc;
+});
+
 exports.addClinic = async (req, res, cb) => {
-  const dbres = await ClinicModel.create(req, (err, suc) => {
-    if (err) console.log('err', err)
-    else console.log('in util success', suc);
-    return suc;
-  });
+  let dbres = await ClinicModel.create(req)
+  console.log(66, dbres)
   return dbres;
 };
-const RepSchema = new Schema({
-  name: String,
-})
+// const RepSchema = new Schema({
+//   name: String,
+// });
 const VisitSchema = new Schema({
   rep: String,
   date: String,
@@ -75,38 +77,32 @@ const VisitSchema = new Schema({
   amountSpent: Number,
   receipt: String,
   providers: [String],
-  clinic: String
+  clinic: String,
 });
 
 const VisitModel = mongoose.model('VisitModel', VisitSchema);
-
-exports.addVisit = async (req, res, cb) => {
-  return VisitModel.create(req, (err, suc) => {
-    console.log(84, req)
-    return suc;
-  });
-};
 
 exports.checkSpending = async (rep) => {
   const myVisits = await VisitModel.find({ rep });
   const spendingByDoctor = myVisits.reduce((a, c) => {
     const { providers, amountSpent } = c;
-    providers.forEach(p => a[p] = (a[p] || 0) + (amountSpent / providers.length))
+    providers.forEach((p) => { a[p] = (a[p] || 0) + (amountSpent / providers.length); });
     return a;
-  }, {})
+  }, {});
   const myProviders = await ProviderModel.find({ rep });
   myProviders.forEach(({ name, _id }) => {
-    const amount = spendingByDoctor[_id]
+    const amount = spendingByDoctor[_id];
     if (amount) {
       spendingByDoctor[_id] = {
-        amount, name
-      }
+        amount, name,
+      };
     }
-  })
-  console.log('check spending', spendingByDoctor)
+  });
+  console.log('check spending', spendingByDoctor);
 
-  return spendingByDoctor
-}
+  return spendingByDoctor;
+};
+
 
 exports.getVisits = async (req, res, cb) => {
   let result;
@@ -114,7 +110,7 @@ exports.getVisits = async (req, res, cb) => {
     result = err || docs;
   });
   console.log(116, result);
-  var cache = [];
+  // const cache = [];
   // JSON.stringify(circ, function (key, value) {
   //   if (typeof value === 'object' && value !== null) {
   //     if (cache.indexOf(value) !== -1) {
