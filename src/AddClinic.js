@@ -42,9 +42,9 @@ class AddClinic extends React.Component {
   }
   render() {
     return (<>
-      {Object.entries(this.state).map(([key, value]) => (
+      {/* {Object.entries(this.state).map(([key, value]) => (
         <div key={key}>{key} is {value}</div>
-      ))}
+      ))} */}
       <this.Input id='name' desc="Clinic Name" />
       <this.Input id='address' desc="Clinic Address" />
       <Button height="32" appearance="primary" onClick={this.submit}>

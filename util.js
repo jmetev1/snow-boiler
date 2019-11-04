@@ -9,9 +9,10 @@ mongoose.connect(mongoDB, {
 }).then((suc) => { }, (err) => { databaseError = err; },
 );
 const db = mongoose.connection;
-db.on('error', () => {
-  databaseError = 'some error';
-  console.error.call(console, 'MongoDB connection error:');
+db.on('error', (e) => {
+  // console.log(13, e)
+  databaseError = e
+  // console.error.call(console, 'MongoDB connection error:');
 });
 
 const { Schema } = mongoose;
@@ -107,9 +108,27 @@ exports.checkSpending = async (rep) => {
   return spendingByDoctor
 }
 
-exports.getVisits = (req, res, cb) => {
-  const dbres = VisitModel.find();
-  return databaseError ? JSON.stringify(process.env) + databaseError : dbres;
+exports.getVisits = async (req, res, cb) => {
+  let result;
+  await VisitModel.find({}, (err, docs) => {
+    result = err || docs;
+  });
+  console.log(116, result);
+  var cache = [];
+  // JSON.stringify(circ, function (key, value) {
+  //   if (typeof value === 'object' && value !== null) {
+  //     if (cache.indexOf(value) !== -1) {
+  //       // Duplicate reference found, discard key
+  //       return;
+  //     }
+  //     // Store value in our collection
+  //     cache.push(value);
+  //   }
+  //   return value;
+  // });
+  // cache = null; // Enable garbage collection
+  // return databaseError ? JSON.stringify(process.env) + databaseError : dbres;
+  return result;
 };
 // const Schema = mongoose.Schema;
 // const UserSchema = new Schema({

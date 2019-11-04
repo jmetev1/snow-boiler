@@ -104,7 +104,7 @@ class AddVisit extends React.Component {
     const { providerOptionsAtOneClinic } = this.state;
     return (
       <>
-        <this.See />
+        {/* <this.See /> */}
         <this.SelectClinic />
         <this.SelectProvider providers={providerOptionsAtOneClinic} />
         <this.Date />

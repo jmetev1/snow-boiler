@@ -56,9 +56,9 @@ class AddProvider extends React.Component {
   </SelectField>
   render() {
     return (<>
-      {Object.entries(this.state).map(([key, value]) => (key !== 'allMyClinics') &&
+      {/* {Object.entries(this.state).map(([key, value]) => (key !== 'allMyClinics') &&
         <div key={key}>{key} is {value}</div>
-      )}
+      )} */}
       < this.SelectClinic />
       <this.Input id='name' desc="Provider Name" />
       <this.SelectType />

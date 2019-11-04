@@ -18,6 +18,7 @@ export const SelectClinic = function () {
 export const SelectProvider = function ({ providers }) {
   return providers ?
     <Wrapper>
+      Choose Providers Present
       {Object.values(providers).map(({ _id, name, chosen }) => <Checkbox
         key={_id}
         label={name}

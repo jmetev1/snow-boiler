@@ -23,14 +23,13 @@ app.use(session({
   saveUninitialized: true,
   resave: false,
 }));
-console.log(20, process.env.PROD_DATA)
 
 app.use(bodyParser.json());
 console.log('env variables are', process.env.NODE_ENV, process.env.PORT)
 
-// if (process.env.NODE_ENV !== "DEVELOPMENT") {
-//   app.use(express.static('public'));
-// }
+if (process.env.NODE_ENV !== "DEVELOPMENT") {
+  app.use(express.static('build'));
+}
 const map = {
   "North Louisiana": "nl",
   "North Mississippi": "nm",
@@ -107,15 +106,14 @@ app.get('/clinic', cors(), async (req, res) => {
   const allClinics = await util.getClinic(req.session.rep)
   res.end(JSON.stringify(allClinics));
 });
-if (port === "3000") {
-  console.log(110, development)
-  app.get('*', cors(), (req, res) => {
-    res.end('no route')
-  })
-}
+// if (port === "3000") {
+//   console.log(110, development)
+//   app.get('*', cors(), (req, res) => {
+//     res.end('no route')
+//   })
+// }
 
 const server = http.createServer(app);
-
 if (development) {
   reload(app).then(() => {
     server.listen(app.get('port'), () => {
