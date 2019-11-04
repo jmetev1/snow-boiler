@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-console.log(app)
 const app = express();
+const path = require('path')
 
 let reload
 const http = require('http');
@@ -29,9 +29,12 @@ app.use(session({
 
 app.use(bodyParser.json());
 console.log('env variables are', process.env.NODE_ENV, process.env.PORT)
+// publicDir = path.join(__dirname, 'public');
 
+// app.use(express.static(publicDir))
 // if (process.env.NODE_ENV !== "DEVELOPMENT") {
-app.use(express.static('build'));
+const buildDir = path.join(__dirname, 'build');
+app.use(express.static(buildDir));
 // }
 const map = {
   "North Louisiana": "nl",
