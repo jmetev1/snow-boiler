@@ -3,6 +3,7 @@ import {
   Pane, Button, SelectField, TextInputField,
 } from 'evergreen-ui';
 import { Checkbox } from 'evergreen-ui/commonjs/checkbox';
+import { showState } from './url';
 
 export const SelectClinic = function () {
   return this.state.allMyClinics ?
@@ -46,3 +47,28 @@ export const Wrapper = ({ children }) => (
     </Pane>
   </Pane>
 );
+
+export const SubmitButton = function () {
+  const doIt = async () => {
+    console.log(this)
+    this.setState({ submitted: false, waiting: true }, async () => {
+      await this.submit();
+      this.setState({ submitted: true })
+    })
+  }
+  const reload = () => location.reload();
+  const { submitted, waiting } = this.state;
+  if (waiting && !submitted) return 'Submitting Data'
+  if (submitted) return (
+    <div>
+      'Succesfully Submitted'
+      <button onClick={reload}>Add Another</button>
+    </div>)
+  return <Button onClick={doIt} appearance="primary">Submit</Button>
+}
+
+export const DevInfo = ({ children }) => {
+  return showState ? (
+    <>{children}</>
+  ) : null
+}

@@ -7,12 +7,14 @@ const path = require('path');
 const buildDir = path.join(__dirname, 'build');
 const cors = require('cors');
 
+const dotenv = require('dotenv');
+dotenv.load();
+const notProduction = process.env.NODE_ENV !== "PRODUCTION"
 let reload;
+if (notProduction) reload = require('reload');
 const http = require('http');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-// const dotenv = require('dotenv');
-// dotenv.load();
 const development = false;
 app.use(express.static(buildDir));
 
@@ -73,11 +75,11 @@ app.get('/getproviders', cors(), async (req, res) => {
 pass array of clinics to get all prviders for each.
 */
 app.post('/provider', cors(), async (req, res) => {
-  console.log('add provider', req.body, req.session);
   const dbres = await util.addProvider({
     ...req.body,
     rep: req.session.rep,
   });
+  console.log('add provider', dbres);
   res.end(JSON.stringify(dbres));
 });
 
@@ -88,7 +90,7 @@ app.post('/visit', cors(), async (req, res) => {
   console.log(21, req.body);
   // console.log()
   const dbres = await util.addVisit(req.body);
-  // console.log(21, dbres);
+  console.log('addvisit result', dbres);
   res.end(JSON.stringify(dbres));
 });
 app.post('/clinic', cors(), async (req, res) => {
@@ -116,7 +118,7 @@ app.get('/clinic', cors(), async (req, res) => {
 // }
 
 const server = http.createServer(app);
-if (development) {
+if (notProduction) {
   reload(app).then(() => {
     server.listen(app.get('port'), () => {
       console.log(`Web server listening on port ${app.get('port')}`);

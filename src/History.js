@@ -62,6 +62,7 @@ export class History extends React.Component {
     console.log(this.state)
     const { allVisits } = this.state;
     // const toShow = allVisits && (chosen === 'all' ? allVisits : byName[chosen])
+    console.log(allVisits)
     return (
       <Wrapper>
         {allVisits ? Object.entries(allVisits[0]).map(([key, value]) => (

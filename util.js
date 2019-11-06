@@ -27,11 +27,7 @@ const ProviderSchema = new Schema({
 const ProviderModel = mongoose.model('ProviderModel', ProviderSchema);
 exports.addProvider = async (req, res, cb) => {
   console.log('add provider', req);
-  const dbres = await ProviderModel.create(req, (err, suc) => {
-    if (err) console.log('err', err);
-    else console.log('in provider util success', suc);
-    return suc;
-  });
+  const dbres = await ProviderModel.create(req)
   return dbres;
 };
 exports.providersByRep = async (rep) => {
@@ -79,30 +75,78 @@ const VisitSchema = new Schema({
   providers: [String],
   clinic: String,
 });
-
-const VisitModel = mongoose.model('VisitModel', VisitSchema);
-
 exports.checkSpending = async (rep) => {
-  const myVisits = await VisitModel.find({ rep });
-  const spendingByDoctor = myVisits.reduce((a, c) => {
+  const year = new Date().getFullYear()
+  // const year = '2020'
+  const min = year + '-01-01';
+  const max = year + '-12-31'
+  const myVisitsThisYear = await VisitModel.find({
+    date: { $gte: min, $lte: max }
+  });
+  const spendingByDoctor = myVisitsThisYear.reduce((a, c) => {
     const { providers, amountSpent } = c;
+    console.log(providers)
     providers.forEach((p) => { a[p] = (a[p] || 0) + (amountSpent / providers.length); });
     return a;
   }, {});
   const myProviders = await ProviderModel.find({ rep });
   myProviders.forEach(({ name, _id }) => {
     const amount = spendingByDoctor[_id];
-    if (amount) {
-      spendingByDoctor[_id] = {
-        amount, name,
-      };
-    }
+    if (amount) spendingByDoctor[_id] = {
+      amount, name,
+    };
   });
-  console.log('check spending', spendingByDoctor);
-
+  const maxSpend = 375;
+  const overLimit = [];
+  for (let [key, value] of Object.entries(spendingByDoctor)) {
+    if (value.amount > maxSpend) overLimit.push([key, value])
+  }
+  console.log('check spending', overLimit);
+  // if (overLimit.length) email(overLimit, rep);
   return spendingByDoctor;
 };
 
+const VisitModel = mongoose.model('VisitModel', VisitSchema);
+const email = (ar, rep) => {
+  console.log('were emailing')
+  ar.forEach(ar => {
+    const [id, obj] = ar;
+    const { amount, name } = obj
+    const sgMail = require('@sendgrid/mail');
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    const msg = {
+      to: process.env.BOSS_EMAIL,
+      from: 'AIsupervisor@pgl.com',
+      subject: 'approaching provider spending limit',
+      html: `<strong>rep ${rep} has spent $${amount} at provider ${name}</strong>`,
+    };
+    sgMail.send(msg);
+  })
+}
+// exports.checkSpending = async (rep) => {
+//   const myVisits = await VisitModel.find({ rep });
+//   const spendingByDoctor = myVisits.reduce((a, c) => {
+//     const { providers, amountSpent } = c;
+//     console.log(providers)
+//     providers.forEach((p) => { a[p] = (a[p] || 0) + (amountSpent / providers.length); });
+//     return a;
+//   }, {});
+//   const myProviders = await ProviderModel.find({ rep });
+//   myProviders.forEach(({ name, _id }) => {
+//     const amount = spendingByDoctor[_id];
+//     if (amount) spendingByDoctor[_id] = {
+//       amount, name,
+//     };
+//   });
+//   const max = 375;
+//   const overLimit = [];
+//   for (let [key, value] of Object.entries(spendingByDoctor)) {
+//     if (value.amount > max) overLimit.push([key, value])
+//   }
+//   console.log('check spending', overLimit);
+//   if (overLimit.length) email(overLimit, rep);
+//   return spendingByDoctor;
+// };
 
 exports.getVisits = async (req, res, cb) => {
   let result;

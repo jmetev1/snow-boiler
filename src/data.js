@@ -18,11 +18,12 @@ export const clinics = [
   "Big Alligator providers"
 ]
 
-export const firstState = () => ({
-  provider: '',
-  amountSpent: (Math.random() * 45).toFixed(2),
-  date: new Date(),
-  reason: r(reasons),
-  materials: 'stuff',
-  receipt: 'coming soon'
-})
+export const firstState = () => {
+  return {
+    provider: '',
+    amountSpent: (Math.random() * 45).toFixed(2),
+    reason: r(reasons),
+    materials: 'stuff',
+    receipt: 'coming soon'
+  }
+}

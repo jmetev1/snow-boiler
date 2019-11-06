@@ -1,9 +1,10 @@
 import React from 'react';
 import { Button } from 'evergreen-ui/commonjs/buttons';
-import { url } from './url';
+import { url, automatic } from './url';
 import { TextInputField } from 'evergreen-ui';
 import { SelectField } from 'evergreen-ui/commonjs/select';
 import random from 'random-name'
+import { SubmitButton, DevInfo } from './Fields';
 
 class AddClinic extends React.Component {
   constructor() {
@@ -12,6 +13,7 @@ class AddClinic extends React.Component {
       name: random.last() + ' Clinic',
       address: '100 ' + random.middle() + ' St.'
     }
+    this.SubmitButton = SubmitButton.bind(this);
   }
   submit = () => {
     console.log(17)
@@ -27,7 +29,7 @@ class AddClinic extends React.Component {
     })
   }
   componentDidMount() {
-    this.submit();
+    if (automatic) this.submit();
   }
   addValue(key, val) {
     const newState = {};
@@ -43,17 +45,17 @@ class AddClinic extends React.Component {
       onChange={this.addValue.bind(this, id)}
     />)
   }
+  See = () => <DevInfo>
+    {Object.entries(this.state).map(([key, value]) => (
+      <div key={key}>{key} is {value}</div>
+    ))}
+  </DevInfo>
   render() {
     return (<>
-      {/* {Object.entries(this.state).map(([key, value]) => (
-        <div key={key}>{key} is {value}</div>
-      ))} */}
+      <this.See />
       <this.Input id='name' desc="Clinic Name" />
       <this.Input id='address' desc="Clinic Address" />
-      <Button height="32" appearance="primary" onClick={this.submit}>
-        Submit
-      </Button>
-
+      <this.SubmitButton />
     </>)
   }
 }

@@ -1,11 +1,10 @@
 /*eslint-disable no-unused-vars*/
 import React from 'react';
-import { Pane, Button, TextInputField, } from 'evergreen-ui';
-import { url, getMyClinics } from './url';
-import { providers, firstState, reasons, clinics, r } from './data';
+import { TextInputField, } from 'evergreen-ui';
+import { url, getMyClinics, automatic } from './url';
+import { firstState, reasons } from './data';
 import { Select } from 'evergreen-ui/commonjs/select';
-import { Provider, SelectClinic, SelectProvider, Wrapper } from './Fields';
-import { thisExpression } from '@babel/types';
+import { SelectClinic, SelectProvider, Wrapper, SubmitButton, DevInfo } from './Fields';
 
 class AddVisit extends React.Component {
   constructor() {
@@ -13,6 +12,7 @@ class AddVisit extends React.Component {
     this.state = firstState()
     this.SelectClinic = SelectClinic.bind(this)
     this.SelectProvider = SelectProvider.bind(this)
+    this.SubmitButton = SubmitButton.bind(this);
   }
   componentDidMount() {
     getMyClinics().then(r => this.setState({ allMyClinics: r, clinic: r[0] }));
@@ -25,7 +25,12 @@ class AddVisit extends React.Component {
       a[key] = this.state[key]
       return a;
     }, {})
-    toSubmit.providers = Object.keys(this.state.providerOptionsAtOneClinic)
+    toSubmit.providers = Object.entries(this.state.providerOptionsAtOneClinic)
+      .reduce((a, [key, value]) => {
+        console.log(28, value);
+        if (value.chosen === true) a.push(key)
+        return a
+      }, [])
     Object.entries(toSubmit).forEach(([key, value]) =>
       console.log('to submit', key, value)
     )
@@ -61,18 +66,19 @@ class AddVisit extends React.Component {
         return a;
       }, {})
     }
-    this.setState(newState,
-      this.submit
-    )
+    console.log('addvalue', key, value)
+    this.setState(newState, (automatic ? this.submit : () => { }))
   }
   Date = () => {
-    console.log(70, this.state.date)
-    return <TextInputField
-      required
-      label="Date"
-      value={this.state.date}
-      // onChange={this.addValue.bind(this, 'date')}
-      type="date" id="start" />
+    return <>
+      <TextInputField
+        required
+        label="Date"
+        onChange={this.addValue.bind(this, 'date')}
+        type="datetime-local" id="start"
+        step="60"
+      />
+    </>
   }
   AmountSpent = () =>
     <TextInputField
@@ -86,31 +92,29 @@ class AddVisit extends React.Component {
     <Select defaultValue="all" onChange={({ target: { value } }) => this.setState({ reason: value })}>
       {reasons.map(n => <option value={n} key={n}>{n}</option>)}
     </Select>
-  See = () => {
-    return Object.entries(this.state).map(([key, value]) => {
+  See = () => <DevInfo>
+    {Object.entries(this.state).map(([key, value]) => {
       switch (key) {
         case 'date': value = JSON.stringify(value)
+        case 'providerOptionsAtOneClinic': value = JSON.stringify(value)
       }
       return (
         <div key={key}>{key} is {typeof value === "string" ? value :
           value ? 'too much info' : 'not chosen'}</div>
       )
-
-    }
-      // value && JSON.stringify(value)}</div>
-    )
-  }
+    })}
+  </DevInfo>
   render() {
     const { providerOptionsAtOneClinic } = this.state;
     return (
       <>
-        {/* <this.See /> */}
+        <this.See />
         <this.SelectClinic />
         <this.SelectProvider providers={providerOptionsAtOneClinic} />
         <this.Date />
         <this.Reason />
         <this.AmountSpent />
-        <Button onClick={this.submit} appearance="primary">Submit</Button>
+        <this.SubmitButton />
       </>
     );
   }

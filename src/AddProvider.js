@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from 'evergreen-ui/commonjs/buttons';
-import { url, getMyClinics } from './url';
+import { url, getMyClinics, automatic } from './url';
 import { TextInputField } from 'evergreen-ui';
 import { SelectField } from 'evergreen-ui/commonjs/select';
 import random from 'random-name'
-import { SelectClinic } from './Fields';
+import { SelectClinic, DevInfo, SubmitButton } from './Fields';
 
 class AddProvider extends React.Component {
   constructor() {
@@ -16,6 +16,7 @@ class AddProvider extends React.Component {
     }
     this.providerTypes = ['MD', "PA", "NP", "MSN"];
     this.SelectClinic = SelectClinic.bind(this)
+    this.SubmitButton = SubmitButton.bind(this);
   }
   submit = () => {
     const copy = { ...this.state }
@@ -29,8 +30,7 @@ class AddProvider extends React.Component {
   componentDidMount() {
     getMyClinics().then(r => {
       const rando = a => Math.floor(Math.random() * a)
-      this.setState({ type: this.providerTypes[rando(4)], allMyClinics: r, clinic: r[rando(r.length)]._id }
-        // , this.submit
+      this.setState({ type: this.providerTypes[rando(4)], allMyClinics: r, clinic: r[rando(r.length)]._id }, (automatic ? this.submit : () => { })
       )
     })
   }
@@ -54,15 +54,17 @@ class AddProvider extends React.Component {
       <option key={type} value={type}>{type}</option>
     )}
   </SelectField>
+  See = () => <DevInfo>
+    {Object.entries(this.state).map(([key, value]) => (key !== 'allMyClinics') &&
+      <div key={key}>{key} is {value}</div>)}
+  </DevInfo>
   render() {
     return (<>
-      {/* {Object.entries(this.state).map(([key, value]) => (key !== 'allMyClinics') &&
-        <div key={key}>{key} is {value}</div>
-      )} */}
-      < this.SelectClinic />
+      <this.See />
+      <this.SelectClinic />
       <this.Input id='name' desc="Provider Name" />
       <this.SelectType />
-      <button onClick={this.submit}>Submit</button>
+      <this.SubmitButton />
     </>)
   }
 }

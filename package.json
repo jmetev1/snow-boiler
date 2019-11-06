@@ -15,6 +15,7 @@
         "next": "npm run build && rm -rf node_modules && npm i --production"
     },
     "dependencies": {
+        "@sendgrid/mail": "^6.4.0",
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
         "dotenv": "6.2.0",
