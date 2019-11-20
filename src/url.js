@@ -11,4 +11,6 @@ export const url = '/'
 export const getMyClinics = () => fetch(url + 'clinic', { method: "GET", }).then(r => r.json())
 // export const automatic = true;
 export const automatic = false;
-export const showState = false;
+// export const showState = false;
+const devShowState = false;
+export const showState = process.env.showState !== undefined ? process.env.showState : devShowState

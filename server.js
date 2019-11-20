@@ -12,11 +12,11 @@ dotenv.load();
 const notProduction = process.env.NODE_ENV !== "PRODUCTION"
 let reload;
 if (notProduction) reload = require('reload');
+else app.use(express.static(buildDir));
 const http = require('http');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const development = false;
-app.use(express.static(buildDir));
 
 const util = require('./util');
 
@@ -39,40 +39,49 @@ const map = {
 
 app.options('/login', cors());
 app.get('/login', cors(), (req, res) => {
-  if (req.session.rep !== 'nm') {
-    req.session.rep = 'nm';
-  }
-  console.log(req.session.rep);
-  const info = {
-    rep: req.session.rep,
-    env: process.env.NODE_ENV,
-    new: 'the newest'
-  };
-  res.send(JSON.stringify(info));
+  const rep = req.session.rep
+  console.log(44, rep)
+  res.send(JSON.stringify({ rep }));
+});
+app.get('/logout', cors(), (req, res) => {
+  req.session.rep = null
+  res.send(JSON.stringify('ok'));
 });
 app.post('/login', cors(), (req, res) => {
-  const rep = map[req.body.rep] || false;
-  req.session.rep = rep;
-  console.log(47, req.session);
-  res.send(JSON.stringify(rep));
+  const { username, password } = req.body
+  if (process.env[username] === password) {
+    console.log(47, 'yeah');
+    const rep = username
+    req.session.rep = username
+    res.send(JSON.stringify(rep));
+  } else res.send(JSON.stringify({ login: "failed" }));
 });
 app.options('/visit', cors());
 
 app.get('/visits', cors(), async (req, res) => {
-  // const dbres = await util.getVisits();
-  const dbres = await util.checkSpending(req.session.rep);
-  res.json([dbres]);
+  const dbres = await util.getVisits(req.session.rep);
+  res.json(dbres);
 });
 app.options('/clinic', cors());
-
 
 app.options('/provider', cors());
 app.get('/getproviders', cors(), async (req, res) => {
   const dbres = await util.providersByRep(req.session.rep);
   res.end(JSON.stringify(dbres));
 });
+app.get('/getSpendingByDoctor/:clinicID', cors(), async (req, res) => {
+  console.log(74, req.params)
+  const dbres = await util.spendingByDoctor(req.session.rep, req.params.clinicID);
+  console.log(75, dbres)
+  res.end(JSON.stringify(dbres));
+});
+app.get('/getVisitsByClinic/:clinicID', cors(), async (req, res) => {
+  const dbres = await util.visitsByClinic(req.session.rep);
+  console.log(74, req.params, dbres)
+  res.end(JSON.stringify(dbres));
+});
 /*
-pass array of clinics to get all prviders for each.
+pass array of clinics to get all providers for each.
 */
 app.post('/provider', cors(), async (req, res) => {
   const dbres = await util.addProvider({
@@ -84,10 +93,22 @@ app.post('/provider', cors(), async (req, res) => {
 });
 
 
+app.post('/receipt', async (req, res) => {
+  console.log(99, req.body)
+  await util.addPhoto(req)
+})
+app.get('/receipt', async (req, res) => {
+  console.log('receipt')
+
+  const array = await util.receipt()
+  const doc = array[0]
+  res.contentType(doc.img.contentType);
+  res.send(doc.img.data);
+})
 
 app.post('/visit', cors(), async (req, res) => {
   req.body.rep = req.session.rep;
-  console.log(21, req.body);
+  console.log(111, req.body);
   // console.log()
   const dbres = await util.addVisit(req.body);
   console.log('addvisit result', dbres);

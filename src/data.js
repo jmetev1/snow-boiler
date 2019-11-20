@@ -1,9 +1,4 @@
-export const providers = [
-  "Tammie Pomona",
-  "Alli Ogdon",
-  "Krisha Cristabel",
-  "Jordan Martell"
-]
+
 export const r = ar => ar[Math.floor(Math.random() * ar.length)]
 export const reasons = [
   "Educational Lunch",

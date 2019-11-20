@@ -39,9 +39,9 @@ class AddProvider extends React.Component {
     newState[key] = val.target.value
     this.setState(newState)
   }
-  Input = ({ id, desc }) => (<TextInputField
+  Input = ({ id, label }) => (<TextInputField
     required
-    description={desc}
+    label={label}
     value={this.state[id]}
     onChange={this.addValue.bind(this, id)}
   />)
@@ -62,7 +62,7 @@ class AddProvider extends React.Component {
     return (<>
       <this.See />
       <this.SelectClinic />
-      <this.Input id='name' desc="Provider Name" />
+      <this.Input id='name' label="Provider Name" />
       <this.SelectType />
       <this.SubmitButton />
     </>)

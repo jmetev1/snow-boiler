@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-
+const logoPath = "./src/image/pglogo.webp"
 dotenv.load();
 const mongoDB = `mongodb://cain:${process.env.DBPW}@ds127783.mlab.com:27783/poolmap`;
 let databaseError;
-
+var fs = require('fs')
 mongoose.connect(mongoDB, {
   connectTimeoutMS: 1000,
 }).then((suc) => { }, (err) => { databaseError = err; });
@@ -48,23 +48,39 @@ const ClinicSchema = new Schema({
   rep: String,
 });
 const ClinicModel = mongoose.model('ClinicModel', ClinicSchema);
-exports.getClinic = async (rep) => {
-  const clinics = await ClinicModel.find({ rep });
-  return clinics;
-};
-exports.addVisit = async (req, res, cb) => VisitModel.create(req, (err, suc) => {
-  console.log(84, req);
-  return suc;
+
+exports.getClinic = async (rep) => await ClinicModel.find(rep === 'admin' ? {} : { rep });
+
+exports.addVisit = async (req, res, cb) => await VisitModel.create(req);
+
+var ReceiptSchema = new Schema({
+  img: { data: Buffer, contentType: String }
 });
+
+const ReceiptModel = mongoose.model('ReceiptModel', ReceiptSchema);
+exports.addPhoto = (req, res) => {
+  const logo = new ReceiptModel();
+  // logo.img.data = fs.readFileSync(logoPath);
+  console.log(68, req.body)
+  logo.img.data = req.body
+  logo.img.contentType = 'image/webp'
+  logo.save((err, suc) => {
+    if (err) console.log('error', err)
+    else console.log('success', suc)
+  })
+}
+exports.receipt = async (req, res) => {
+  const photo = await ReceiptModel.find();
+  console.log(76, photo, typeof photo)
+  return photo
+}
 
 exports.addClinic = async (req, res, cb) => {
   let dbres = await ClinicModel.create(req)
   console.log(66, dbres)
   return dbres;
 };
-// const RepSchema = new Schema({
-//   name: String,
-// });
+
 const VisitSchema = new Schema({
   rep: String,
   date: String,
@@ -74,28 +90,55 @@ const VisitSchema = new Schema({
   receipt: String,
   providers: [String],
   clinic: String,
+  clinicName: String
 });
-exports.checkSpending = async (rep) => {
+
+exports.visitsByClinic = async (rep) => {
+  const visits = await VisitModel.find({ rep });
+}
+exports.spendingByDoctor = async (rep, clinic) => {
   const year = new Date().getFullYear()
-  // const year = '2020'
   const min = year + '-01-01';
   const max = year + '-12-31'
-  const myVisitsThisYear = await VisitModel.find({
-    date: { $gte: min, $lte: max }
-  });
+  const query = { date: { $gte: min, $lte: max } }
+  if (clinic) query.clinic = clinic
+  const myVisitsThisYear = await VisitModel.find(query);
   const spendingByDoctor = myVisitsThisYear.reduce((a, c) => {
     const { providers, amountSpent } = c;
-    console.log(providers)
     providers.forEach((p) => { a[p] = (a[p] || 0) + (amountSpent / providers.length); });
     return a;
   }, {});
-  const myProviders = await ProviderModel.find({ rep });
+  rep = rep === 'admin' ? {} : { rep }
+  const myProviders = await ProviderModel.find(rep);
   myProviders.forEach(({ name, _id }) => {
     const amount = spendingByDoctor[_id];
     if (amount) spendingByDoctor[_id] = {
       amount, name,
     };
   });
+  return spendingByDoctor;
+}
+exports.checkSpending = async (rep) => {
+  // const year = new Date().getFullYear()
+  // const min = year + '-01-01';
+  // const max = year + '-12-31'
+  // const myVisitsThisYear = await VisitModel.find({
+  //   date: { $gte: min, $lte: max }
+  // });
+  // const spendingByDoctor = myVisitsThisYear.reduce((a, c) => {
+  //   const { providers, amountSpent } = c;
+  //   console.log(providers)
+  //   providers.forEach((p) => { a[p] = (a[p] || 0) + (amountSpent / providers.length); });
+  //   return a;
+  // }, {});
+  // const myProviders = await ProviderModel.find({ rep });
+  // myProviders.forEach(({ name, _id }) => {
+  //   const amount = spendingByDoctor[_id];
+  //   if (amount) spendingByDoctor[_id] = {
+  //     amount, name,
+  //   };
+  // });
+  const spendingByDoctor = exports.spendingByDoctor(rep)
   const maxSpend = 375;
   const overLimit = [];
   for (let [key, value] of Object.entries(spendingByDoctor)) {
@@ -148,56 +191,10 @@ const email = (ar, rep) => {
 //   return spendingByDoctor;
 // };
 
-exports.getVisits = async (req, res, cb) => {
-  let result;
-  await VisitModel.find({}, (err, docs) => {
-    result = err || docs;
-  });
-  console.log(116, result);
-  // const cache = [];
-  // JSON.stringify(circ, function (key, value) {
-  //   if (typeof value === 'object' && value !== null) {
-  //     if (cache.indexOf(value) !== -1) {
-  //       // Duplicate reference found, discard key
-  //       return;
-  //     }
-  //     // Store value in our collection
-  //     cache.push(value);
-  //   }
-  //   return value;
-  // });
-  // cache = null; // Enable garbage collection
-  // return databaseError ? JSON.stringify(process.env) + databaseError : dbres;
+exports.getVisits = async (rep) => {
+  rep = rep === 'admin' ? {} : { rep }
+  let result = await VisitModel.find(rep)
+  console.log(116, result, rep);
+
   return result;
 };
-// const Schema = mongoose.Schema;
-// const UserSchema = new Schema({
-//   username: String,
-//   password: String,
-// });
-// const UserModel = mongoose.model('UserModel', UserSchema);
-// const UserOrCollection = new UserModel({
-//   username:'Cain',
-//   password: 'Cain'
-// })
-// UserOrCollection.save((err, created)=> {
-//   if (err) {
-//     console.log(err);
-//   }
-//   // console.log(created);
-// })
-// UserModel.create({
-//   username: 'jacques',
-//   password: 'woah'
-// }, (err, instance) => {
-//   if (err) return handleError(err)
-//   console.log(instance);
-// })
-
-// UserModel.find((err, user) => {
-//   console.log('inside find');
-//   if (err){
-//     console.error(err)
-//   }
-//   console.log(user, 'this is finidng');
-// })

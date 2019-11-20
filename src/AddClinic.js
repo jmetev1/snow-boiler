@@ -38,9 +38,8 @@ class AddClinic extends React.Component {
   }
   Input = ({ id, desc }) => {
     return (<TextInputField
-      // label="A controlled text input field"
+      label={desc}
       required
-      description={desc}
       value={this.state[id]}
       onChange={this.addValue.bind(this, id)}
     />)
