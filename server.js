@@ -54,7 +54,7 @@ app.post('/login', cors(), (req, res) => {
     const rep = username
     req.session.rep = username
     res.send(JSON.stringify(rep));
-  } else res.send(JSON.stringify({ login: "failed" }));
+  } else res.send("false");
 });
 app.options('/visit', cors());
 
