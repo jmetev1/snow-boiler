@@ -5,7 +5,9 @@
     "private": true,
     "scripts": {
         "start": "node server",
-        "localbuildrun": "NODE_ENV=PRODUCTION node server",
+        "prod": "NODE_ENV=PRODUCTION nodemon server",
+        "buildrun": "npm run build && npm run prod",
+        "prodauth": "NODE_ENV=PRODUCTION authentication=true nodemon server",
         "build": "node scripts/build.js",
         "dev": "PORT=3001 node scripts/start.js",
         "dev-all": "run-p dev dev-server",
@@ -19,6 +21,7 @@
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
         "dotenv": "6.2.0",
+        "dotenv-expand": "5.1.0",
         "express": "4.16.2",
         "express-session": "^1.17.0",
         "mongoose": "^5.7.7",
@@ -38,7 +41,6 @@
         "camelcase": "^5.2.0",
         "case-sensitive-paths-webpack-plugin": "2.2.0",
         "css-loader": "2.1.1",
-        "dotenv-expand": "5.1.0",
         "eslint": "^6.1.0",
         "eslint-config-react-app": "^5.0.2",
         "eslint-loader": "3.0.2",
@@ -98,7 +100,8 @@
         "development": [
             "last 1 chrome version",
             "last 1 firefox version",
-            "last 1 safari version"
+            "last 1 safari version",
+            "last 2 iOS major versions"
         ]
     },
     "jest": {

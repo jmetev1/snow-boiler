@@ -25,12 +25,12 @@ class Authorized extends React.Component {
   }
   Header = () => {
     const links = {
-      'Add Provider': AddProvider,
-      'Add Clinic': AddClinic,
       'Past Visits': PastVisits,
+      'Add Clinic': AddClinic,
+      'Add Provider': AddProvider,
       'Add Visit': AddVisit,
     }
-    const MyButton = props => <Button style={{ flex: '1 1 33%' }} height="40" {...props} />
+    const MyButton = props => <Button style={{ flex: '1 1 33%' }} height="36" {...props} />
     const style = { margin: 'auto' }
     return <nav style={{ display: 'flex', flexWrap: 'wrap' }}>
       <MyButton key='logout' onClick={this.logout} children={<span style={style}>Logout</span>} />

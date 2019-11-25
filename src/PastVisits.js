@@ -13,6 +13,7 @@ export class PastVisits extends React.Component {
   componentDidMount() {
     fetch(url + 'clinic').then(d => d.json()).then(allMyClinics => {
       this.setState({ allMyClinics }, () => {
+        console.log(16, allMyClinics)
         this.clinicIdToName = allMyClinics.reduce((a, { name, _id }) => {
           a[_id] = name;
           return a
@@ -37,6 +38,7 @@ export class PastVisits extends React.Component {
   render() {
     const { allVisits, clinic, byClinic = {} } = this.state;
     console.log(this.state)
+    console.log(this.clinicIdToName)
     return (
       <Wrapper>
         {allVisits ? <>

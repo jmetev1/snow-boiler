@@ -39,8 +39,11 @@ const map = {
 
 app.options('/login', cors());
 app.get('/login', cors(), (req, res) => {
-  const rep = req.session.rep
-  console.log(44, rep)
+  let rep = req.session.rep
+  console.log(46, process.env.NODE_ENV)
+  if (process.env.authentication !== 'true') {
+    rep = req.session.rep = 'nm'
+  }
   res.send(JSON.stringify({ rep }));
 });
 app.get('/logout', cors(), (req, res) => {
@@ -88,17 +91,17 @@ app.post('/provider', cors(), async (req, res) => {
     ...req.body,
     rep: req.session.rep,
   });
-  console.log('add provider', dbres);
+  // console.log('add provider', dbres);
   res.end(JSON.stringify(dbres));
 });
 
 
 app.post('/receipt', async (req, res) => {
-  console.log(99, req.body)
+  // console.log(99, req.body)
   await util.addPhoto(req)
 })
 app.get('/receipt', async (req, res) => {
-  console.log('receipt')
+  // console.log('receipt')
 
   const array = await util.receipt()
   const doc = array[0]
@@ -108,12 +111,11 @@ app.get('/receipt', async (req, res) => {
 
 app.post('/visit', cors(), async (req, res) => {
   req.body.rep = req.session.rep;
-  console.log(111, req.body);
-  // console.log()
   const dbres = await util.addVisit(req.body);
-  console.log('addvisit result', dbres);
+  console.log('add visit result', dbres);
   res.end(JSON.stringify(dbres));
 });
+
 app.post('/clinic', cors(), async (req, res) => {
   console.log('add clinic', req.body, req.session);
   const dbres = await util.addClinic({
@@ -123,9 +125,6 @@ app.post('/clinic', cors(), async (req, res) => {
   console.log(98, dbres)
   res.end(JSON.stringify(dbres));
 });
-
-
-
 
 app.get('/clinic', cors(), async (req, res) => {
   const allClinics = await util.getClinic(req.session.rep);
@@ -137,7 +136,10 @@ app.get('/clinic', cors(), async (req, res) => {
 //     res.end('no route')
 //   })
 // }
-
+// app.post('*', (req, res) => {
+//   console.table(req.params)
+//   res.status(404).send(JSON.stringify('route ' + req.params[0] + " does not exist"))
+// })
 const server = http.createServer(app);
 if (notProduction) {
   reload(app).then(() => {

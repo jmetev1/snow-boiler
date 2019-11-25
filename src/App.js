@@ -1,14 +1,13 @@
 import React from 'react';
 import { Button } from 'evergreen-ui/commonjs/buttons';
 import './App.css'
-import southLA from './image/la_south.gif'
 import { url } from './url';
 import { Authorized } from './Authorized';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Wrapper, Err } from './Fields';
 import { TextInputField, Pane } from 'evergreen-ui';
 import { LoginSchema } from './Validation';
-import logo from './image/pglogo.webp'
+import logo from './image/pnglogo.png'
 
 class App extends React.Component {
   submit = values => {
@@ -21,9 +20,11 @@ class App extends React.Component {
     })
   }
   componentDidMount() {
-    this.props.region.then(res => res.json()).then(info => {
-      this.setState({ region: info.rep })
-    })
+    this.props.region.then(res => res.json())
+      .then(info => {
+        this.setState({ region: info.rep })
+      })
+      .catch(e => { throw new Error('app js setstate on comp did mount') })
   }
   Login = () => <Pane
     display="flex"
@@ -54,7 +55,9 @@ class App extends React.Component {
   </Pane>
 
   render() {
-    return (this.state && this.state.region) ? <Authorized /> : < this.Login />
+    return <React.StrictMode >
+      {(this.state && this.state.region) ? <Authorized /> : < this.Login />}
+    </React.StrictMode>
   }
 }
 

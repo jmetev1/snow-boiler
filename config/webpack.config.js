@@ -32,8 +32,7 @@ const postcssNormalize = require('postcss-normalize');
 const appPackageJson = require(paths.appPackageJson);
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
-const shouldUseSourceMap = false;
-console.log(shouldUseSourceMap, 'jack36')
+const shouldUseSourceMap = true;
 // Some apps do not need the benefits of saving a web request, so not inlining the chunk
 // makes for a smoother build process.
 const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== 'false';
@@ -234,8 +233,8 @@ module.exports = function (webpackEnv) {
               safari10: true,
             },
             // Added for profiling in devtools
-            keep_classnames: isEnvProductionProfile,
-            keep_fnames: isEnvProductionProfile,
+            keep_classnames: true,
+            keep_fnames: true,
             output: {
               ecma: 5,
               comments: false,
