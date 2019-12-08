@@ -1,6 +1,6 @@
 /*eslint-disable */
 import React, { useState, useEffect } from 'react';
-import { TextInputField, SelectField, Checkbox, Button, FormField, } from 'evergreen-ui';
+import { MyTextInputField, SelectField, Checkbox, Button, FormField, } from 'evergreen-ui';
 import { url, getMyClinics, automatic } from './url';
 import { firstState, reasons } from './data';
 import { Select } from 'evergreen-ui/commonjs/select';

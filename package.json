@@ -19,10 +19,12 @@
     "dependencies": {
         "@sendgrid/mail": "^6.4.0",
         "body-parser": "^1.19.0",
+        "connect-mongodb-session": "^2.2.0",
         "cors": "^2.8.5",
         "dotenv": "6.2.0",
         "dotenv-expand": "5.1.0",
         "express": "4.16.2",
+        "express-fileupload": "^1.1.6",
         "express-session": "^1.17.0",
         "mongoose": "^5.7.7",
         "reload": "^3.0.2",

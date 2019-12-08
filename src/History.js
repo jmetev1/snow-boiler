@@ -2,7 +2,7 @@
 import React from 'react';
 import { url } from './url';
 import {
-  Pane, Button, SelectField, TextInputField, Text, Select,
+  Pane, Button, SelectField, MyTextInputField, Text, Select,
 } from 'evergreen-ui';
 import { Wrapper } from './Fields';
 
