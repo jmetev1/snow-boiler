@@ -1,5 +1,4 @@
 import React from "react";
-import { Button } from "evergreen-ui/commonjs/buttons";
 import { url, automatic } from "./url";
 import random from "random-name";
 import { SubmitButton, DevInfo, MyTextInputField } from "./Fields";

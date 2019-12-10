@@ -54,10 +54,12 @@ app.use(bodyParser.json());
 app.options("/login", cors());
 app.get("/login", cors(), (req, res) => {
   let rep = req.session.rep;
+  console.log(57, process.env.authentication);
   if (process.env.authentication !== "true") {
     rep = req.session.rep = "nm";
   }
-  res.send(JSON.stringify({ rep }));
+  if (rep) res.send(JSON.stringify({ rep }));
+  else res.json(false);
 });
 
 app.get("/logout", cors(), (req, res) => {

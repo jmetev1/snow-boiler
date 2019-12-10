@@ -1,13 +1,11 @@
 import React from "react";
 import { AddVisit } from "./AddVisit";
 import { AddProvider } from "./AddProvider";
-import { Button } from "evergreen-ui/commonjs/buttons";
+import { Button, Pane } from "evergreen-ui";
 import "./App.css";
 import { AddClinic } from "./AddClinic";
-import { Pane } from "evergreen-ui";
 import { PastVisits } from "./PastVisits";
 import { url } from "./url";
-import { Practice } from "./Practice";
 
 export class Authorized extends React.Component {
   constructor() {
@@ -15,7 +13,6 @@ export class Authorized extends React.Component {
     this.state = {
       // show: AddProvider
       show: AddVisit
-      // show: Practice
       // show: AddClinic
       // show: PastVisits
     };

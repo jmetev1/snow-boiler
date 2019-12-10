@@ -33,13 +33,13 @@ exports.providersByRep = async rep => {
 };
 
 exports.getClinic = async rep => {
-  console.log(36, rep);
   return await ClinicModel.find(rep === "admin" ? {} : { rep });
 };
 
 exports.addVisit = async (req, res, cb) => {
-  console.log(req);
-  return await VisitModel.create(req);
+  const result = await VisitModel.create(req);
+  console.log(result);
+  return result;
 };
 
 exports.addPhoto = async (name, req, res) =>

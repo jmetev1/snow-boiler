@@ -1,15 +1,7 @@
-/*eslint-disable no-unused-vars*/
 import React from "react";
-import {
-  TextInputField,
-  SelectField,
-  Checkbox,
-  Button,
-  FormField
-} from "evergreen-ui";
+import { Checkbox, Button, FormField, Label } from "evergreen-ui";
 import { url, getMyClinics, automatic } from "./url";
 import { firstState, reasons } from "./data";
-import { Select } from "evergreen-ui/commonjs/select";
 import {
   Wrapper,
   DevInfo,
@@ -34,25 +26,45 @@ class AddVisit extends React.Component {
       .then(r => r.json())
       .then(providersByClinic => this.setState({ providersByClinic }));
   }
-  submit = async (values, { resetForm, ...rest }) => {
-    for (const action in rest) console.log(26, action);
-    // Object.entries(values).forEach(([k, v]) => console.log(k + ' ' + v))
-    await fetch(url + "visit", {
+  submit = (values, { resetForm, ...rest }) =>
+    fetch(url + "visit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values)
+      body: JSON.stringify({
+        ...values,
+        receiptID: this.state.receiptID,
+        clinicName: this.state.allMyClinics.find(
+          clinic => clinic._id === values.clinic
+        ).name
+      })
     })
       .then(res => res.json())
       .then(res => {
-        console.log(61, res);
         if (res && res._id) {
-          console.log("resetting");
           resetForm();
           alert("Successfully Submitted");
         } else this.setState({ submitError: res });
       });
+
+  uploadReceipt = ({ target: { files } }) => {
+    const data = new FormData();
+    data.append("myFile", files[0]);
+    fetch(url + "receipt", {
+      method: "POST",
+      body: data
+    })
+      .then(r => {
+        if (r.ok) return r.json();
+        else {
+          const receiptUpload = "Upload failed, please contact tech support";
+          this.setState({ receiptUpload });
+          throw new Error(receiptUpload);
+        }
+      })
+      .then(receiptID => this.setState({ receiptID, receiptSubmitted: true }));
   };
   render() {
+    console.log(this.state);
     const { providersByClinic, allMyClinics, clinic } = this.state;
     return (
       <Formik
@@ -61,7 +73,7 @@ class AddVisit extends React.Component {
             ? {
                 clinic: "5dc33f20acaf6659567af212",
                 date: "2019-12-30T12:59",
-                providers: ["5dc33f35acaf6659567af215"],
+                providers: [],
                 reason: "Educational Lunch",
                 amountSpent: 100 * Math.random()
               }
@@ -83,6 +95,14 @@ class AddVisit extends React.Component {
                   <option key={_id} value={_id} children={name} />
                 ))}
               </Field>
+              <MyTextInputField
+                label="Add Receipt"
+                type="file"
+                capture={true}
+                width={250}
+                marginBottom={32}
+                onChange={this.uploadReceipt}
+              />
               <ErrorMessage component={Err} name={"date"} />
               <Field
                 name="date"
@@ -112,24 +132,20 @@ class AddVisit extends React.Component {
                 as={MyTextInputField}
                 label="Enter Amount Spent"
               />
-              <label>
+              <Label>
                 Additional Notes:
-                <div>
-                  <Field name="notes" as={MyTextarea} />
-                </div>
-              </label>
-              <MyTextInputField
-                type="file"
-                capture="camera"
-                accept="image/*"
-                label="Add Receipt"
-              />
+                <Field name="notes" as={MyTextarea} />
+              </Label>
               <div>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  children="Submit"
-                />
+                {this.state.receiptSubmitted ? (
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    children="Submit"
+                  />
+                ) : (
+                  "Please Attach A Receipt Before Submitting"
+                )}
                 {isSubmitting && "Adding Visit"}
                 {this.state.submitError && this.state.submitError}
               </div>
