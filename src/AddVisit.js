@@ -20,12 +20,14 @@ class AddVisit extends React.Component {
     this.state.allMyClinics = [];
     this.state.submitError = null;
   }
+
   componentDidMount() {
     getMyClinics().then(r => this.setState({ allMyClinics: r }));
     fetch(url + "getproviders")
       .then(r => r.json())
       .then(providersByClinic => this.setState({ providersByClinic }));
   }
+
   submit = (values, { resetForm, ...rest }) =>
     fetch(url + "visit", {
       method: "POST",
@@ -71,12 +73,12 @@ class AddVisit extends React.Component {
         initialValues={
           process.env.NODE_ENV === "development"
             ? {
-                clinic: "5dc33f20acaf6659567af212",
-                date: "2019-12-30T12:59",
-                providers: [],
-                reason: "Educational Lunch",
-                amountSpent: 100 * Math.random()
-              }
+              clinic: "5dc33f20acaf6659567af212",
+              date: "2019-12-30T12:59",
+              providers: [],
+              reason: "Educational Lunch",
+              amountSpent: 100 * Math.random()
+            }
             : { date: "", providers: [], amountSpent: "", reason: "0" }
         }
         validationSchema={AddVisitSchema}
@@ -136,18 +138,21 @@ class AddVisit extends React.Component {
                 Additional Notes:
                 <Field name="notes" as={MyTextarea} />
               </Label>
-              <div>
-                {this.state.receiptSubmitted ? (
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    children="Submit"
-                  />
-                ) : (
-                  "Please Attach A Receipt Before Submitting"
-                )}
-                {isSubmitting && "Adding Visit"}
-                {this.state.submitError && this.state.submitError}
+              <div style={{ display: 'flex' }}>
+                <div style={{ margin: 'auto' }}>
+                  {this.state.receiptSubmitted ? (
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      children="Submit"
+                      height={60}
+                    />
+                  ) : (
+                      "Please Attach A Receipt Before Submitting"
+                    )}
+                  {isSubmitting && "Adding Visit"}
+                  {this.state.submitError && this.state.submitError}
+                </div>
               </div>
             </Form>
           </Wrapper>

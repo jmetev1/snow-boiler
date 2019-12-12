@@ -3,7 +3,6 @@ const dotenv = require("dotenv");
 dotenv.load();
 var fs = require("fs");
 let databaseError;
-const { Schema } = mongoose;
 
 const Models = require("./models");
 const { ReceiptModel, VisitModel, ProviderModel, ClinicModel } = Models;
@@ -14,7 +13,7 @@ mongoose
     { connectTimeoutMS: 1000 }
   )
   .then(
-    suc => {},
+    suc => { },
     err => (databaseError = err)
   );
 const db = mongoose.connection;
@@ -46,7 +45,7 @@ exports.addPhoto = async (name, req, res) =>
   await ReceiptModel.create({
     name,
     img: {
-      data: fs.readFileSync(`./src/image/${name}.png`),
+      data: fs.readFileSync(`./receipts/${name}.png`),
       contentType: "image/png"
     }
   });

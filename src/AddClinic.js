@@ -1,32 +1,36 @@
-import React from "react";
-import { url, automatic } from "./url";
-import random from "random-name";
-import { SubmitButton, DevInfo, MyTextInputField } from "./Fields";
+import React from 'react';
+import random from 'random-name';
+import { url, automatic } from './url';
+import { SubmitButton, DevInfo, MyTextInputField } from './Fields';
 
 export class AddClinic extends React.Component {
   constructor() {
     super();
     this.state = {
-      name: random.last() + " Clinic",
-      address: "100 " + random.middle() + " St."
+      name: `${random.last()} Clinic`,
+      address: '100 ' + random.middle() + ' St.',
     };
     this.SubmitButton = SubmitButton.bind(this);
   }
+
   submit = () => {
-    fetch(url + "clinic", {
-      method: "POST",
+    fetch(`${url}clinic`, {
+      method: 'POST',
       body: JSON.stringify(this.state),
-      headers: { "Content-Type": "application/json" }
-    }).then(r => r.json());
+      headers: { 'Content-Type': 'application/json' },
+    }).then((r) => r.json());
   };
+
   componentDidMount() {
     if (automatic) this.submit();
   }
+
   addValue(key, val) {
     const newState = {};
     newState[key] = val.target.value;
     this.setState(newState);
   }
+
   Input = ({ id, label }) => (
     <MyTextInputField
       label={label}
@@ -35,6 +39,7 @@ export class AddClinic extends React.Component {
       onChange={this.addValue.bind(this, id)}
     />
   );
+
   See = () => (
     <DevInfo>
       {Object.entries(this.state).map(([key, value]) => (
@@ -44,6 +49,7 @@ export class AddClinic extends React.Component {
       ))}
     </DevInfo>
   );
+
   render() {
     return (
       <>

@@ -58,6 +58,7 @@ export class Authorized extends React.Component {
         {typeof this.state.show === "function" ? (
           <Pane
             paddingTop={15}
+            paddingBottom={100}
             display="flex"
             alignItems="center"
             justifyContent="center"
@@ -67,8 +68,8 @@ export class Authorized extends React.Component {
             </Pane>
           </Pane>
         ) : (
-          <div>you broke authorized.js</div>
-        )}
+            <div>you broke authorized.js</div>
+          )}
       </>
     );
   }

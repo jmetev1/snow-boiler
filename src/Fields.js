@@ -1,30 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Pane,
   Button,
   SelectField,
   TextInputField,
-  Textarea
-} from "evergreen-ui";
-import { showState, url } from "./url";
+  Textarea,
+} from 'evergreen-ui';
+import { showState, url } from './url';
+
 const height = 48;
 
-export const MySelectField = props => {
-  return <SelectField {...props} inputHeight={48} />;
-};
-export const MyTextarea = props => (
-  <Textarea {...props} style={{ fontSize: "16px" }} />
+export const MySelectField = (props) => (
+  <SelectField {...props} inputHeight={height} />
+);
+export const MyTextarea = (props) => (
+  <Textarea {...props} style={{ fontSize: '16px' }} />
 );
 
-export const MyTextInputField = props => (
-  <TextInputField {...props} inputHeight={48} />
+export const MyTextInputField = (props) => (
+  <TextInputField {...props} inputHeight={height} />
 );
 
-export const SelectClinic = function() {
+export const SelectClinic = function () {
   return this.state.allMyClinics ? (
     <MySelectField
       label="Choose a Clinic"
-      onChange={event => this.addValue("clinic", event)}
+      onChange={(event) => this.addValue('clinic', event)}
     >
       <option key={0} value={0}>
         Choose A Clinic
@@ -36,8 +37,8 @@ export const SelectClinic = function() {
       ))}
     </MySelectField>
   ) : (
-    "loading Clinics"
-  );
+      'loading Clinics'
+    );
 };
 
 export const Wrapper = ({ children }) => (
@@ -48,7 +49,7 @@ export const Wrapper = ({ children }) => (
   </Pane>
 );
 
-export const SubmitButton = function() {
+export const SubmitButton = function () {
   const doIt = () => {
     this.setState({ submitted: false, waiting: true }, async () => {
       await this.submit();
@@ -57,20 +58,20 @@ export const SubmitButton = function() {
   };
   const reload = () => location.reload(); //eslint-disable-line
   const { submitted, waiting } = this.state;
-  if (waiting && !submitted) return "Submitting Data";
+  if (waiting && !submitted) return 'Submitting Data';
   return submitted ? (
     <div>
       'Successfully Submitted'
       <button onClick={reload}>Add Another</button>
     </div>
   ) : (
-    <Button onClick={doIt} appearance="primary" children="Submit" />
-  );
+      <Button onClick={doIt} appearance="primary" children="Submit" />
+    );
 };
 
 export const DevInfo = ({ children }) => (showState ? <>{children}</> : null);
 
-export const addValue = function(key, event) {
+export const addValue = function (key, event) {
   const newState = {};
   const { value } = event.target;
   newState[key] = value;
@@ -81,10 +82,10 @@ export const OneClinic = ({ clinicID, visits = [], clinicName }) => {
   const [spending, updateSpending] = useState({});
   const [visitID, updateVisitID] = useState(null);
   useEffect(() => {
-    fetch(url + `getSpendingByDoctor/${clinicID}`)
-      .then(d => d.json())
+    fetch(`${url}getSpendingByDoctor/${clinicID}`)
+      .then((d) => d.json())
       .then(updateSpending)
-      .then(a => updateVisitID("5ddc8639e8705d24251d60c3"));
+      .then((a) => updateVisitID('5ddc8639e8705d24251d60c3'));
   }, [clinicID]);
   const nameAmountPairs = Object.values(spending);
   return nameAmountPairs.length ? (
@@ -102,53 +103,64 @@ export const OneClinic = ({ clinicID, visits = [], clinicName }) => {
       >
         <option value="0">Choose a Date</option>
         {visits.map(
-          ({ providers, amountSpent, date, materials, receipt, _id }) => (
-            <option key={_id} value={_id}>
-              {new Date(date).toLocaleDateString()}
-            </option>
-          )
+          ({
+            providers, amountSpent, date, materials, receipt, _id
+          }) => (
+              <option key={_id} value={_id}>
+                {new Date(date).toLocaleDateString()}
+              </option>
+            ),
         )}
       </MySelectField>
       <OneVisit visitID={visitID} visits={visits} spending={spending} />
     </>
   ) : (
-    "Choose Clinic Or None Found"
-  );
+      'Choose Clinic Or None Found'
+    );
 };
 
 const OneVisit = ({ visitID, visits, spending }) => {
-  console.log(visitID, visits, "in one visit");
-  if (!visitID || visitID === "0") return "Choose a Date";
-  else {
-    const relevantVisits = visits.filter(({ _id }) => _id === visitID);
-    if (!relevantVisits.length) return "Loading or none found";
+  console.log(visitID, visits, 'in one visit');
+  if (!visitID || visitID === '0') return 'Choose a Date';
 
-    const { amountSpent, providers, materials, receiptID } = relevantVisits[0];
-    const size = "250px";
-    return (
-      <>
-        <h4>For This Visit</h4>
-        <div>Amount Spent: {amountSpent}</div>
-        <div>Materials: {materials}</div>
-        <div>
-          Providers Present:
-          {providers.map(providerID => (
-            <div key={providerID}>{spending[providerID].name}</div>
-          ))}
-        </div>
-        <img
-          height={size}
-          width={size}
-          src={url + "receipt/" + receiptID}
-          alt="receipt"
-        />
-      </>
-    );
-  }
+  const relevantVisits = visits.filter(({ _id }) => _id === visitID);
+  if (!relevantVisits.length) return 'Loading or none found';
+
+  const {
+    amountSpent, providers, materials, receiptID
+  } = relevantVisits[0];
+  const size = '250px';
+  return (
+    <>
+      <h4>For This Visit</h4>
+      <div>
+        Amount Spent:
+{' '}
+        {amountSpent}
+      </div>
+      <div>
+        Materials:
+{' '}
+        {materials}
+      </div>
+      <div>
+        Providers Present:
+        {providers.map((providerID) => (
+          <div key={providerID}>{spending[providerID].name}</div>
+        ))}
+      </div>
+      <img
+        height={size}
+        width={size}
+        src={`${url}receipt/${receiptID}`}
+        alt="receipt"
+      />
+    </>
+  );
 };
 
 export const Err = ({ children }) => (
-  <div style={{ background: "red" }}>{children}</div>
+  <div style={{ background: 'red' }}>{children}</div>
 );
 
 // export const SelectProvider = function ({ providers }) {
