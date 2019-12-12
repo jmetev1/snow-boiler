@@ -151,7 +151,6 @@ const OneVisit = ({ visitID, visits, spending }) => {
       </div>
       <img
         height={size}
-        width={size}
         src={`${url}receipt/${receiptID}`}
         alt="receipt"
       />
@@ -162,6 +161,37 @@ const OneVisit = ({ visitID, visits, spending }) => {
 export const Err = ({ children }) => (
   <div style={{ background: 'red' }}>{children}</div>
 );
+/*eslint-disable*/
+export const compress = (e, cb) => {
+  const width = 300;
+  const fileName = e.target.files[0].name;
+  const reader = new FileReader();
+  reader.readAsDataURL(e.target.files[0]);
+  console.log(172, e.target.files[0].size / 1000)
+  reader.onload = event => {
+    const img = new Image();
+    img.src = event.target.result;
+    img.onload = () => {
+      const elem = document.createElement('canvas');
+      const scaleFactor = width / img.width;
+      elem.width = width;
+      elem.height = img.height * scaleFactor;
+      console.log(img.height, elem.height, img.width, elem.width)
+      const ctx = elem.getContext('2d');
+      // img.width and img.height will contain the original dimensions
+      ctx.drawImage(img, 0, 0, width, elem.height);
+      ctx.canvas.toBlob((blob) => {
+        const file = new File([blob], fileName, {
+          type: 'image/jpeg',
+          lastModified: Date.now()
+        });
+        cb(file)
+
+      }, 'image/jpeg', 1);
+    },
+      reader.onerror = error => console.log(error);
+  };
+}
 
 // export const SelectProvider = function ({ providers }) {
 //   return providers ?

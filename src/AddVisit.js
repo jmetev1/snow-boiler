@@ -8,7 +8,8 @@ import {
   Err,
   MyTextInputField,
   MySelectField,
-  MyTextarea
+  MyTextarea,
+  compress
 } from "./Fields";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { AddVisitSchema } from "./Validation";
@@ -48,9 +49,11 @@ class AddVisit extends React.Component {
         } else this.setState({ submitError: res });
       });
 
-  uploadReceipt = ({ target: { files } }) => {
+  // uploadReceipt = ({ target: { files } }) => {
+  uploadReceipt = (file) => {
+    console.log(file.size / 1000)
     const data = new FormData();
-    data.append("myFile", files[0]);
+    data.append("myFile", file);
     fetch(url + "receipt", {
       method: "POST",
       body: data
@@ -103,8 +106,10 @@ class AddVisit extends React.Component {
                 capture={true}
                 width={250}
                 marginBottom={32}
-                onChange={this.uploadReceipt}
+                // onChange={this.uploadReceipt}
+                onChange={(e) => compress(e, this.uploadReceipt)}
               />
+              {this.state.receiptUpload}
               <ErrorMessage component={Err} name={"date"} />
               <Field
                 name="date"
