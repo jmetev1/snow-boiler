@@ -1,7 +1,5 @@
 import React from "react";
-
 import { url, getMyClinics, automatic } from "./url";
-import { Button, SelectField } from "evergreen-ui";
 import random from "random-name";
 import {
   SelectClinic,
@@ -17,10 +15,10 @@ export class AddProvider extends React.Component {
     this.state = {
       name: random.first() + " " + random.last(),
       clinic: "",
-      type: "MD"
+      type: "MD",
+      allMyClinics: []
     };
     this.providerTypes = ["MD", "PA", "NP", "MSN"];
-    this.SelectClinic = SelectClinic.bind(this);
     this.SubmitButton = SubmitButton.bind(this);
   }
   submit = () => {
@@ -83,11 +81,16 @@ export class AddProvider extends React.Component {
       )}
     </DevInfo>
   );
+
   render() {
+    const { allMyClinics } = this.state;
     return (
       <>
         <this.See />
-        <this.SelectClinic />
+        <SelectClinic
+          clinics={allMyClinics}
+          setClinic={this.addValue.bind(this, "clinic")}
+        />
         <this.Input id="name" label="Provider Name" />
         <this.SelectType />
         <this.SubmitButton />

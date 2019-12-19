@@ -13,7 +13,6 @@ export const getMyClinics = () =>
 // export const automatic = true;
 export const automatic = false;
 // export const showState = false;
-// const devShowState = false;
 const devShowState = true;
 export const showState =
   process.env.showState !== undefined ? process.env.showState : devShowState;

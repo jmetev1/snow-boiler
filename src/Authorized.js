@@ -12,9 +12,9 @@ export class Authorized extends React.Component {
     super();
     this.state = {
       // show: AddProvider
-      show: AddVisit
+      // show: AddVisit
       // show: AddClinic
-      // show: PastVisits
+      show: PastVisits
     };
   }
   logout() {
@@ -68,8 +68,8 @@ export class Authorized extends React.Component {
             </Pane>
           </Pane>
         ) : (
-            <div>you broke authorized.js</div>
-          )}
+          <div>you broke authorized.js</div>
+        )}
       </>
     );
   }

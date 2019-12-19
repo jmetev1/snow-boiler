@@ -6,7 +6,7 @@ const VisitSchema = new Schema({
   rep: String,
   date: String,
   purpose: String,
-  materials: String,
+  materials: Array,
   amountSpent: Number,
   receiptID: String,
   providers: [String],

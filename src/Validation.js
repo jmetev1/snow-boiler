@@ -19,7 +19,8 @@ export const AddVisitSchema = Yup.object().shape({
   providers: Yup.array().min(1, "Choose at least one provider").required('Required'),
   amountSpent: Yup.string().min(1, "Enter Amount Spent").required('Required'),
   reason: Yup.string().min(2, 'Choose Reason For Visit').required('Required'),
-  date: Yup.string().min(2, "Enter Date and Time").required('Required')
+  date: Yup.string().min(2, "Enter Date and Time").required('Required'),
+  materials: Yup.array().min(1, "Choose at least one type of materials").required("Required")
   // firstName, lastName, 
 });
 export const LoginSchema = Yup.object().shape({

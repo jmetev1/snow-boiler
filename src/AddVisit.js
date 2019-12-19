@@ -1,7 +1,7 @@
 import React from "react";
-import { Checkbox, Button, FormField, Label } from "evergreen-ui";
-import { url, getMyClinics, automatic } from "./url";
-import { firstState, reasons } from "./data";
+import { Checkbox, Button, FormField, Label, Pane } from "evergreen-ui";
+import { url, getMyClinics } from "./url";
+import { reasons } from "./data";
 import {
   Wrapper,
   DevInfo,
@@ -11,16 +11,17 @@ import {
   MyTextarea,
   compress
 } from "./Fields";
-import { Formik, Field, Form, ErrorMessage } from "formik";
+import { Formik, Field, ErrorMessage } from "formik";
 import { AddVisitSchema } from "./Validation";
+// const dev = false;
+const dev = process.env.NODE_ENV === "development";
 
 class AddVisit extends React.Component {
-  constructor() {
-    super();
-    this.state = firstState();
-    this.state.allMyClinics = [];
-    this.state.submitError = null;
-  }
+  state = {
+    allMyClinics: [],
+    submitError: null,
+    validate: true
+  };
 
   componentDidMount() {
     getMyClinics().then(r => this.setState({ allMyClinics: r }));
@@ -29,13 +30,14 @@ class AddVisit extends React.Component {
       .then(providersByClinic => this.setState({ providersByClinic }));
   }
 
-  submit = (values, { resetForm, ...rest }) =>
+  submit = (values, { resetForm }) => {
+    values.amountSpent = Number(values.amountSpent.toFixed(2));
     fetch(url + "visit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...values,
-        receiptID: this.state.receiptID,
+        receiptID: this.state.receiptID || "",
         clinicName: this.state.allMyClinics.find(
           clinic => clinic._id === values.clinic
         ).name
@@ -46,12 +48,13 @@ class AddVisit extends React.Component {
         if (res && res._id) {
           resetForm();
           alert("Successfully Submitted");
-        } else this.setState({ submitError: res });
+        } else {
+          this.setState({ submitError: res });
+        }
       });
+  };
 
-  // uploadReceipt = ({ target: { files } }) => {
-  uploadReceipt = (file) => {
-    console.log(file.size / 1000)
+  uploadReceipt = file => {
     const data = new FormData();
     data.append("myFile", file);
     fetch(url + "receipt", {
@@ -60,108 +63,124 @@ class AddVisit extends React.Component {
     })
       .then(r => {
         if (r.ok) return r.json();
-        else {
-          const receiptUpload = "Upload failed, please contact tech support";
-          this.setState({ receiptUpload });
-          throw new Error(receiptUpload);
-        }
+        this.setState({
+          receiptUpload: "Upload failed, please contact tech support"
+        });
+        throw new Error("Upload failed, please contact tech support");
       })
       .then(receiptID => this.setState({ receiptID, receiptSubmitted: true }));
   };
   render() {
-    console.log(this.state);
-    const { providersByClinic, allMyClinics, clinic } = this.state;
+    const { providersByClinic, allMyClinics } = this.state;
     return (
       <Formik
         initialValues={
-          process.env.NODE_ENV === "development"
+          dev
             ? {
-              clinic: "5dc33f20acaf6659567af212",
-              date: "2019-12-30T12:59",
-              providers: [],
-              reason: "Educational Lunch",
-              amountSpent: 100 * Math.random()
-            }
-            : { date: "", providers: [], amountSpent: "", reason: "0" }
+                clinic: "5dc33f20acaf6659567af212",
+                date: "2019-12-30T12:59",
+                providers: [],
+                reason: "Educational Lunch",
+                amountSpent: Number((100 * Math.random()).toFixed(2)),
+                materials: []
+              }
+            : {
+                clinic: "",
+                date: "",
+                providers: [],
+                reason: "0",
+                amountSpent: "",
+                materials: []
+              }
         }
-        validationSchema={AddVisitSchema}
+        validationSchema={this.state.validate && AddVisitSchema}
         onSubmit={this.submit}
       >
-        {({ isSubmitting, values, ...rest }) => (
-          <Wrapper>
-            <Form>
-              <See values={values} />
-              <ErrorMessage component={Err} name={"clinic"} />
-              <Field name="clinic" as={MySelectField} label="Choose Clinic">
-                <option key={0} value={0}>
-                  Choose Clinic
-                </option>
-                {allMyClinics.map(({ _id, name }) => (
-                  <option key={_id} value={_id} children={name} />
-                ))}
-              </Field>
-              <MyTextInputField
-                label="Add Receipt"
-                type="file"
-                capture={true}
-                width={250}
-                marginBottom={32}
-                // onChange={this.uploadReceipt}
-                onChange={(e) => compress(e, this.uploadReceipt)}
-              />
-              {this.state.receiptUpload}
-              <ErrorMessage component={Err} name={"date"} />
-              <Field
-                name="date"
-                label="Date"
-                type="datetime-local"
-                as={MyTextInputField}
-                autoComplete="true"
-              />
-              <SelectProvider
-                providersByClinic={providersByClinic}
-                clinic={values.clinic}
-              />
-              <ErrorMessage component={Err} name={"reason"} />
-              <Field name="reason" as={MySelectField} label="Reason For Visit">
-                <option value="0" key={0}>
-                  Choose a Reason
-                </option>
-                {reasons.map(n => (
-                  <option value={n} key={n}>
-                    {n}
+        {({ isSubmitting, values, handleReset, handleSubmit, ...rest }) => {
+          return (
+            <Wrapper>
+              <form onReset={handleReset} onSubmit={handleSubmit} noValidate>
+                <See values={values} />
+                <button
+                  type="button"
+                  onClick={() => this.setState(({ validate }) => !validate)}
+                >
+                  Toggle Validation
+                </button>
+                <ErrorMessage component={Err} name={"clinic"} />
+                <Field name="clinic" as={MySelectField} label="Choose Clinic">
+                  {[{ _id: 0, name: "Choose Clinic" }, ...allMyClinics].map(
+                    ({ _id, name }) => (
+                      <option key={_id} value={_id} children={name} />
+                    )
+                  )}
+                </Field>
+                <SelectProvider
+                  providersByClinic={providersByClinic}
+                  clinic={values.clinic}
+                />
+                <MyTextInputField
+                  label="Add Receipt"
+                  type="file"
+                  capture={true}
+                  width={250}
+                  marginBottom={32}
+                  onChange={e => compress(e, this.uploadReceipt)}
+                />
+                {this.state.receiptUpload}
+                <ErrorMessage component={Err} name={"date"} />
+                <Field
+                  name="date"
+                  label="Date"
+                  type="datetime-local"
+                  as={MyTextInputField}
+                />
+                <ErrorMessage component={Err} name={"reason"} />
+                <Field
+                  name="reason"
+                  as={MySelectField}
+                  label="Reason For Visit"
+                >
+                  <option value="0" key={0}>
+                    Choose a Reason
                   </option>
-                ))}
-              </Field>
-              <ErrorMessage component={Err} name={"amountSpent"} />
-              <Field
-                name="amountSpent"
-                as={MyTextInputField}
-                label="Enter Amount Spent"
-              />
-              <Label>
-                Additional Notes:
-                <Field name="notes" as={MyTextarea} />
-              </Label>
-              <div style={{ display: 'flex' }}>
-                <div style={{ margin: 'auto' }}>
-                  {this.state.receiptSubmitted ? (
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                      children="Submit"
-                      height={60}
-                    />
-                  ) : (
+                  {reasons.map(n => (
+                    <option value={n} key={n}>
+                      {n}
+                    </option>
+                  ))}
+                </Field>
+                <SelectMaterials />
+                <ErrorMessage component={Err} name={"amountSpent"} />
+                <Field
+                  name="amountSpent"
+                  as={MyTextInputField}
+                  label="Enter Amount Spent"
+                />
+                <Label>
+                  Additional Notes:
+                  <Field name="notes" as={MyTextarea} />
+                </Label>
+                <div style={{ display: "flex" }}>
+                  <div style={{ margin: "auto" }}>
+                    {this.state.receiptSubmitted || dev ? (
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        children="Submit"
+                        height={60}
+                      />
+                    ) : (
                       "Please Attach A Receipt Before Submitting"
                     )}
-                  {isSubmitting && "Adding Visit"}
-                  {this.state.submitError && this.state.submitError}
+                    {isSubmitting && "Adding Visit"}
+                    {this.state.submitError && this.state.submitError}
+                  </div>
                 </div>
-              </div>
-            </Form>
-          </Wrapper>
-        )}
+              </form>
+            </Wrapper>
+          );
+        }}
       </Formik>
     );
   }
@@ -175,6 +194,31 @@ const See = ({ values, errors }) => (
       </div>
     ))}
   </DevInfo>
+);
+
+const SelectMaterials = () => (
+  <FormField label="Choose Materials">
+    <ErrorMessage component={Err} name={"materials"} />
+    <Pane
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "space-around"
+      }}
+    >
+      {["1", "2", "3", "4", "5"].map(n => (
+        <Field
+          style={{ flex: "1 0 33%" }}
+          key={n}
+          label={`Material ${n}`}
+          as={Checkbox}
+          type="checkbox"
+          name="materials"
+          value={n}
+        />
+      ))}
+    </Pane>
+  </FormField>
 );
 
 const SelectProvider = ({ providersByClinic, clinic, ...rest }) => {

@@ -1,16 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { url } from "./url";
-import { Wrapper, SelectClinic, addValue, OneClinic } from "./Fields";
-import { r } from "./data";
-import { Select } from "evergreen-ui";
+import { Wrapper, SelectClinic, MySelectField } from "./Fields";
+import { OneClinic } from "./OneClinic";
 
 export class PastVisits extends React.Component {
-  constructor() {
-    super();
-    this.state = {};
-    this.SelectClinic = SelectClinic.bind(this);
-    this.addValue = addValue.bind(this);
-  }
+  state = {};
   componentDidMount() {
     fetch(url + "clinic")
       .then(d => d.json())
@@ -32,25 +26,14 @@ export class PastVisits extends React.Component {
           this.setState({ byClinic });
         });
       });
-    fetch(url + "getproviders")
-      .then(d => d.json())
-      .then(providersById => this.setState({ providersById }));
   }
 
   render() {
-    const { allVisits, clinic, byClinic = {}, chosenClinicName } = this.state;
-    console.log(this.state);
+    const { allMyClinics, byClinic } = this.state;
     return (
       <Wrapper>
-        {allVisits ? (
-          <>
-            <this.SelectClinic />
-            <OneClinic
-              clinicID={clinic}
-              visits={byClinic[clinic]}
-              clinicName={chosenClinicName}
-            />
-          </>
+        {byClinic ? (
+          <SelectClinicModule byClinic={byClinic} clinics={allMyClinics} />
         ) : (
           "Loading"
         )}
@@ -58,3 +41,22 @@ export class PastVisits extends React.Component {
     );
   }
 }
+
+const SelectClinicModule = ({ clinics, byClinic }) => {
+  const [clinic, setClinic] = useState({});
+
+  const setClinicByID = ({ target: { value } }) => {
+    const chosen = clinics.find(c => value === c._id) || {};
+    setClinic(chosen);
+  };
+  const { _id, name } = clinic;
+  const visits = byClinic[_id];
+  return (
+    <>
+      <SelectClinic clinics={clinics} setClinic={setClinicByID} />
+      {_id && (
+        <OneClinic clinicID={_id} clinicName={name} visits={visits}></OneClinic>
+      )}
+    </>
+  );
+};
