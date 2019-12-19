@@ -92,21 +92,24 @@ export const OneVisit = ({ visit = {}, spending }) => {
           })}
         </ol>
       </div>
-      <div style={{ display: "flex", height: "350px" }}>
-        {receiptID && receiptID.length ? (
-          <div style={{ margin: "auto", transform: "rotate(90deg)" }}>
-            <a href={`${url}receipt/${receiptID}`}>
-              <img
-                height="250px"
-                src={`${url}receipt/${receiptID}`}
-                alt="receipt"
-              />
-            </a>
+      {receiptID && receiptID.length ? (
+        <>
+          <h4>Click To Enlarge</h4>
+          <div style={{ display: "flex", height: "350px" }}>
+            <div style={{ margin: "auto", transform: "rotate(90deg)" }}>
+              <a href={`${url}receipt/${receiptID}`}>
+                <img
+                  height="250px"
+                  src={`${url}receipt/${receiptID}`}
+                  alt="receipt"
+                />
+              </a>
+            </div>
           </div>
-        ) : (
-          "No image was uploaded"
-        )}
-      </div>
+        </>
+      ) : (
+        "No image was uploaded"
+      )}
     </>
   );
 };
