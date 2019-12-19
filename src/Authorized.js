@@ -12,9 +12,9 @@ export class Authorized extends React.Component {
     super();
     this.state = {
       // show: AddProvider
-      // show: AddVisit
+      show: AddVisit
       // show: AddClinic
-      show: PastVisits
+      // show: PastVisits
     };
   }
   logout() {

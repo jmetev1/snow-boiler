@@ -31,7 +31,7 @@ class AddVisit extends React.Component {
   }
 
   submit = (values, { resetForm }) => {
-    values.amountSpent = Number(values.amountSpent.toFixed(2));
+    values.amountSpent = Number(Number(values.amountSpent).toFixed(2));
     fetch(url + "visit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -153,6 +153,7 @@ class AddVisit extends React.Component {
                 <SelectMaterials />
                 <ErrorMessage component={Err} name={"amountSpent"} />
                 <Field
+                  inputMode="numeric"
                   name="amountSpent"
                   as={MyTextInputField}
                   label="Enter Amount Spent"
