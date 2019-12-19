@@ -115,7 +115,10 @@ export const Err = ({ children }) => (
 /*eslint-disable no-unused-expressions*/
 export const compress = (e, cb) => {
   e.persist();
-  const width = 300;
+  // const width = 300;
+  const width = Number(document.getElementById("receipt-width").value);
+  console.log(118, process.env);
+  console.log(119, width, typeof width);
   const reader = new FileReader();
   reader.readAsDataURL(e.target.files[0]);
   console.log(172, e.target.files[0].size / 1000);

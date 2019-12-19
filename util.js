@@ -13,7 +13,7 @@ mongoose
     { connectTimeoutMS: 1000 }
   )
   .then(
-    suc => { },
+    suc => {},
     err => (databaseError = err)
   );
 const db = mongoose.connection;
@@ -36,6 +36,7 @@ exports.getClinic = async rep => {
 };
 
 exports.addVisit = async (req, res, cb) => {
+  // exports.checkSpending(req.session.rep);
   const result = await VisitModel.create(req);
   console.log(result);
   return result;
@@ -109,9 +110,9 @@ exports.checkSpending = async rep => {
   for (let [key, value] of Object.entries(spendingByDoctor)) {
     if (value.amount > maxSpend) overLimit.push([key, value]);
   }
-  console.log("check spending", overLimit);
-  // if (overLimit.length) email(overLimit, rep);
-  return spendingByDoctor;
+  console.log(113, "check spending", overLimit);
+  if (overLimit.length) email(overLimit, rep);
+  // return spendingByDoctor;
 };
 
 const email = (ar, rep) => {
