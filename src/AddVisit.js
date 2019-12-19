@@ -73,126 +73,116 @@ class AddVisit extends React.Component {
   render() {
     const { providersByClinic, allMyClinics } = this.state;
     return (
-      <>
-        {this.state.receiptID && (
-          <img src={`${url}receipt/${this.state.receiptID}`} alt="receipt" />
-        )}
-        <input
-          id="receipt-width"
-          style={{ border: "3px solid blue" }}
-          defaultValue="400"
-        />
-        <Formik
-          initialValues={
-            dev
-              ? {
-                  clinic: "5dc33f20acaf6659567af212",
-                  date: "2019-12-30T12:59",
-                  providers: [],
-                  reason: "Educational Lunch",
-                  amountSpent: Number((100 * Math.random()).toFixed(2)),
-                  materials: []
-                }
-              : {
-                  clinic: "",
-                  date: "",
-                  providers: [],
-                  reason: "0",
-                  amountSpent: "",
-                  materials: []
-                }
-          }
-          validationSchema={this.state.validate && AddVisitSchema}
-          onSubmit={this.submit}
-        >
-          {({ isSubmitting, values, handleReset, handleSubmit, ...rest }) => {
-            return (
-              <Wrapper>
-                <form onReset={handleReset} onSubmit={handleSubmit} noValidate>
-                  <See values={values} />
-                  <button
-                    type="button"
-                    onClick={() => this.setState(({ validate }) => !validate)}
-                  >
-                    Toggle Validation
-                  </button>
-                  <ErrorMessage component={Err} name={"clinic"} />
-                  <Field name="clinic" as={MySelectField} label="Choose Clinic">
-                    {[{ _id: 0, name: "Choose Clinic" }, ...allMyClinics].map(
-                      ({ _id, name }) => (
-                        <option key={_id} value={_id} children={name} />
-                      )
-                    )}
-                  </Field>
-                  <SelectProvider
-                    providersByClinic={providersByClinic}
-                    clinic={values.clinic}
-                  />
-                  <MyTextInputField
-                    label="Add Receipt"
-                    type="file"
-                    capture={true}
-                    width={250}
-                    marginBottom={32}
-                    onChange={e => compress(e, this.uploadReceipt)}
-                  />
-                  {this.state.receiptUpload}
-                  <ErrorMessage component={Err} name={"date"} />
-                  <Field
-                    name="date"
-                    label="Date"
-                    type="datetime-local"
-                    as={MyTextInputField}
-                  />
-                  <ErrorMessage component={Err} name={"reason"} />
-                  <Field
-                    name="reason"
-                    as={MySelectField}
-                    label="Reason For Visit"
-                  >
-                    <option value="0" key={0}>
-                      Choose a Reason
+      <Formik
+        initialValues={
+          dev
+            ? {
+                clinic: "5dc33f20acaf6659567af212",
+                date: "2019-12-30T12:59",
+                providers: [],
+                reason: "Educational Lunch",
+                amountSpent: Number((100 * Math.random()).toFixed(2)),
+                materials: []
+              }
+            : {
+                clinic: "",
+                date: "",
+                providers: [],
+                reason: "0",
+                amountSpent: "",
+                materials: []
+              }
+        }
+        validationSchema={this.state.validate && AddVisitSchema}
+        onSubmit={this.submit}
+      >
+        {({ isSubmitting, values, handleReset, handleSubmit, ...rest }) => {
+          return (
+            <Wrapper>
+              <form onReset={handleReset} onSubmit={handleSubmit} noValidate>
+                <See values={values} />
+                <button
+                  type="button"
+                  onClick={() => this.setState(({ validate }) => !validate)}
+                >
+                  Toggle Validation
+                </button>
+                <ErrorMessage component={Err} name={"clinic"} />
+                <Field name="clinic" as={MySelectField} label="Choose Clinic">
+                  {[{ _id: 0, name: "Choose Clinic" }, ...allMyClinics].map(
+                    ({ _id, name }) => (
+                      <option key={_id} value={_id} children={name} />
+                    )
+                  )}
+                </Field>
+                <SelectProvider
+                  providersByClinic={providersByClinic}
+                  clinic={values.clinic}
+                />
+                <MyTextInputField
+                  label="Add Receipt"
+                  type="file"
+                  capture={true}
+                  width={250}
+                  marginBottom={32}
+                  onChange={e => compress(e, this.uploadReceipt)}
+                />
+                {this.state.receiptUpload}
+                <ErrorMessage component={Err} name={"date"} />
+                <Field
+                  name="date"
+                  label="Date"
+                  type="datetime-local"
+                  as={MyTextInputField}
+                />
+                <ErrorMessage component={Err} name={"reason"} />
+                <Field
+                  name="reason"
+                  as={MySelectField}
+                  label="Reason For Visit"
+                >
+                  <option value="0" key={0}>
+                    Choose a Reason
+                  </option>
+                  {reasons.map(n => (
+                    <option value={n} key={n}>
+                      {n}
                     </option>
-                    {reasons.map(n => (
-                      <option value={n} key={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </Field>
-                  <SelectMaterials />
-                  <ErrorMessage component={Err} name={"amountSpent"} />
-                  <Field
-                    inputMode="numeric"
-                    name="amountSpent"
-                    as={MyTextInputField}
-                    label="Enter Amount Spent"
-                  />
-                  <Label>
-                    Additional Notes:
-                    <Field name="notes" as={MyTextarea} />
-                  </Label>
-                  <div style={{ display: "flex" }}>
-                    <div style={{ margin: "auto" }}>
-                      {this.state.receiptSubmitted || dev ? (
-                        <Button
-                          type="submit"
-                          disabled={isSubmitting}
-                          children="Submit"
-                          height={60}
-                        />
-                      ) : (
-                        "Please Attach A Receipt Before Submitting"
-                      )}
-                      {isSubmitting && "Adding Visit"}
-                      {this.state.submitError && this.state.submitError}
-                    </div>
+                  ))}
+                </Field>
+                <SelectMaterials />
+                <ErrorMessage component={Err} name={"amountSpent"} />
+                <Field
+                  inputMode="numeric"
+                  name="amountSpent"
+                  as={MyTextInputField}
+                  label="Enter Amount Spent"
+                />
+                <Label>
+                  Additional Notes:
+                  <Field name="notes" as={MyTextarea} />
+                </Label>
+                <div style={{ display: "flex" }}>
+                  <div style={{ margin: "auto" }}>
+                    {this.state.receiptSubmitted || dev ? (
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        children="Submit"
+                        height={60}
+                      />
+                    ) : (
+                      "Please Attach A Receipt Before Submitting"
+                    )}
+                    {isSubmitting && "Adding Visit"}
+                    {this.state.submitError && this.state.submitError}
                   </div>
-                </form>
-              </Wrapper>
-            );
-          }}
-        </Formik>
-      </>
+                </div>
+              </form>
+            </Wrapper>
+          );
+        }}
+      </Formik>
     );
   }
 }
