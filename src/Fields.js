@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from 'react';
 import {
   Pane,
   Button,
   SelectField,
   TextInputField,
-  Textarea
-} from "evergreen-ui";
-import { showState, url } from "./url";
+  Textarea,
+} from 'evergreen-ui';
+import { url } from './url';
+import { OptionsContext } from './App';
 
 const height = 48;
 
@@ -14,7 +15,7 @@ export const MySelectField = props => (
   <SelectField {...props} inputHeight={height} />
 );
 export const MyTextarea = props => (
-  <Textarea {...props} style={{ fontSize: "16px" }} />
+  <Textarea {...props} style={{ fontSize: '16px' }} />
 );
 
 export const MyTextInputField = props => (
@@ -24,7 +25,7 @@ export const MyTextInputField = props => (
 export const SelectClinic = ({ clinics = [], setClinic }) => {
   return (
     <MySelectField label="Choose a Clinic" onChange={setClinic}>
-      {[{ _id: 0, name: "Choose A Clinic" }, ...clinics].map(
+      {[{ _id: 0, name: 'Choose A Clinic' }, ...clinics].map(
         ({ _id, name }) => (
           <option key={_id} value={_id}>
             {name}
@@ -43,7 +44,7 @@ export const Wrapper = ({ children }) => (
   </Pane>
 );
 
-export const SubmitButton = function() {
+export const SubmitButton = function({ link = '' }) {
   const doIt = () => {
     this.setState({ submitted: false, waiting: true }, async () => {
       await this.submit();
@@ -52,18 +53,24 @@ export const SubmitButton = function() {
   };
   const reload = () => location.reload(); //eslint-disable-line
   const { submitted, waiting } = this.state;
-  if (waiting && !submitted) return "Submitting Data";
+  if (waiting && !submitted) return 'Submitting Data';
   return submitted ? (
     <div>
       'Successfully Submitted'
-      <button onClick={reload}>Add Another</button>
+      <div>{link || <button onClick={reload}>Add Another</button>}</div>
     </div>
   ) : (
     <Button onClick={doIt} appearance="primary" children="Submit" />
   );
 };
 
-export const DevInfo = ({ children }) => (showState ? <>{children}</> : null);
+export const DevInfo = ({ children }) => (
+  <OptionsContext.Consumer>
+    {({ showState }) => {
+      return showState ? <>{children}</> : null;
+    }}
+  </OptionsContext.Consumer>
+);
 
 export const addValue = function(key, event) {
   console.log(event, event.target);
@@ -74,7 +81,7 @@ export const addValue = function(key, event) {
 };
 
 export const OneVisit = ({ visit = {}, spending }) => {
-  if (!visit._id) return "Choose a Date";
+  if (!visit._id) return 'Choose a Date';
 
   const { amountSpent, providers, materials, receiptID } = visit;
 
@@ -82,21 +89,22 @@ export const OneVisit = ({ visit = {}, spending }) => {
     <>
       <h4>For This Visit</h4>
       <div>Amount Spent: ${amountSpent}</div>
-      <div>Materials:{materials.length ? materials.join(" ") : "None"}</div>
+      <div>Materials:{materials.length ? materials.join(' ') : 'None'}</div>
       <div>
         Providers Present:
         <ol>
           {providers.map(providerID => {
-            if (!spending[providerID]) debugger;
-            return <li key={providerID}>{spending[providerID].name}</li>;
+            if (spending[providerID])
+              return <li key={providerID}>{spending[providerID].name}</li>;
+            else return 'loading';
           })}
         </ol>
       </div>
       {receiptID && receiptID.length ? (
         <>
           <h4>Click To Enlarge</h4>
-          <div style={{ display: "flex", height: "350px" }}>
-            <div style={{ margin: "auto", transform: "rotate(90deg)" }}>
+          <div style={{ display: 'flex', height: '350px' }}>
+            <div style={{ margin: 'auto', transform: 'rotate(90deg)' }}>
               <a href={`${url}receipt/${receiptID}`}>
                 <img
                   height="250px"
@@ -108,14 +116,14 @@ export const OneVisit = ({ visit = {}, spending }) => {
           </div>
         </>
       ) : (
-        "No image was uploaded"
+        'No image was uploaded'
       )}
     </>
   );
 };
 
 export const Err = ({ children }) => (
-  <div style={{ background: "red" }}>{children}</div>
+  <div style={{ background: 'red' }}>{children}</div>
 );
 /*eslint-disable no-unused-expressions*/
 export const compress = (e, cb) => {
@@ -128,21 +136,21 @@ export const compress = (e, cb) => {
     const img = new Image();
     img.src = event.target.result;
     img.onload = () => {
-      const elem = document.createElement("canvas");
+      const elem = document.createElement('canvas');
       elem.width = width;
       elem.height = img.height * (width / img.width);
-      const ctx = elem.getContext("2d");
+      const ctx = elem.getContext('2d');
       // img.width and img.height will contain the original dimensions
       ctx.drawImage(img, 0, 0, width, elem.height);
       ctx.canvas.toBlob(
         blob => {
           const file = new File([blob], e.target.files[0].name, {
-            type: "image/jpeg",
-            lastModified: Date.now()
+            type: 'image/jpeg',
+            lastModified: Date.now(),
           });
           cb(file);
         },
-        "image/jpeg",
+        'image/jpeg',
         1
       );
     };

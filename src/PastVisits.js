@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import { url } from "./url";
-import { Wrapper, SelectClinic, MySelectField } from "./Fields";
-import { OneClinic } from "./OneClinic";
+import React, { useState } from 'react';
+import { url } from './url';
+import { Wrapper, SelectClinic, MySelectField } from './Fields';
+import { OneClinic } from './OneClinic';
 
 export class PastVisits extends React.Component {
   state = {};
   componentDidMount() {
-    fetch(url + "clinic")
+    fetch(url + 'clinic')
       .then(d => d.json())
       .then(allMyClinics => {
         this.setState({ allMyClinics }, () => {
-          if (process.env.NODE_ENV === "development")
-            this.setState({ clinic: "5dc33f20acaf6659567af212" });
+          if (process.env.NODE_ENV === 'development')
+            this.setState({ clinic: '5dc33f20acaf6659567af212' });
         });
       });
-    fetch(url + "visits")
+    fetch(url + 'visits')
       .then(d => d.json())
       .then(allVisits => {
         this.setState({ allVisits }, () => {
@@ -35,7 +35,7 @@ export class PastVisits extends React.Component {
         {byClinic ? (
           <SelectClinicModule byClinic={byClinic} clinics={allMyClinics} />
         ) : (
-          "Loading"
+          'Loading'
         )}
       </Wrapper>
     );

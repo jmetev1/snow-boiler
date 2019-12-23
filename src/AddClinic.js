@@ -18,7 +18,7 @@ export class AddClinic extends React.Component {
       method: 'POST',
       body: JSON.stringify(this.state),
       headers: { 'Content-Type': 'application/json' },
-    }).then((r) => r.json());
+    }).then(r => r.json());
   };
 
   componentDidMount() {
@@ -56,7 +56,9 @@ export class AddClinic extends React.Component {
         <this.See />
         <this.Input id="name" label="Clinic Name" />
         <this.Input id="address" label="Clinic Address" />
-        <this.SubmitButton />
+        <this.SubmitButton
+          link={<a href={url + 'addprovider'}>Click Here To Add A Provider</a>}
+        />
       </>
     );
   }

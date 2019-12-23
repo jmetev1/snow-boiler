@@ -1,18 +1,23 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-import { url } from "./url";
-import { ErrorBoundary } from "./ErrorBoundary";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import { url } from './url';
+import { ErrorBoundary } from './ErrorBoundary';
 // import * as serviceWorker from './serviceWorker';
 
-const region = fetch(url + "login", { credentials: "include" });
+const region = fetch(url + 'login', { credentials: 'include' });
 
 ReactDOM.render(
   <ErrorBoundary>
-    <App region={region} />
+    <App
+      region={region}
+      route={
+        location.pathname.substr(1) //eslint-disable-line
+      }
+    />
   </ErrorBoundary>,
-  document.getElementById("root")
+  document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change
