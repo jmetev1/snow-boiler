@@ -44,7 +44,7 @@ export class Authorized extends React.Component {
           children={<span style={style}>Logout</span>}
         />
         {Object.entries(links).map(([label, [component, url]]) => {
-          if (!process.env.REACT_APP_SETTINGS && label === 'Settings')
+          if (localStorage.settings !== 'true' && label === 'Settings')
             return null;
           else
             return (

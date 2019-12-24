@@ -14,16 +14,16 @@ let options = {
   validate: true,
   prefill: false,
   showState: dev,
+  settings: false,
 };
-const newUser = !!localStorage.dev;
+const newUser = !Object.keys(options).every(key => localStorage[key]);
+console.log(newUser);
 for (let key in options) {
-  if (newUser) options[key] = localStorage.getItem(key) === 'true' || false;
-  else localStorage.setItem(key, options[key]);
+  if (newUser) localStorage.setItem(key, options[key]);
+  else options[key] = localStorage.getItem(key) === 'true' || false;
 }
 
-export const OptionsContext = React.createContext({
-  updateOptions: (key, value) => console.log('the default update options'),
-});
+export const OptionsContext = React.createContext({});
 
 export default class App extends React.Component {
   constructor() {
