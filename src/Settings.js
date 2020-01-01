@@ -9,6 +9,7 @@ const Settings = () => (
       const height = 28;
       return (
         <Pane>
+          <div>Current User is {region}</div>
           {Object.entries(rest).map(([key, value]) => {
             return (
               <Label key={key} height={height}>

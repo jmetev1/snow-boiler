@@ -25,7 +25,9 @@ class AddVisit extends React.Component {
     getMyClinics().then(allMyClinics => this.setState({ allMyClinics }));
     fetch(url + 'getproviders')
       .then(r => r.json())
-      .then(providersByClinic => this.setState({ providersByClinic }));
+      .then(providersByClinic => {
+        this.setState({ providersByClinic });
+      });
   }
 
   submit = (values, { resetForm }) => {
@@ -43,6 +45,7 @@ class AddVisit extends React.Component {
     })
       .then(res => res.json())
       .then(res => {
+        console.log(48, res);
         if (res && res._id) {
           location.reload();
           alert('Successfully Submitted');
@@ -73,16 +76,17 @@ class AddVisit extends React.Component {
     return (
       <OptionsContext.Consumer>
         {({ validate, dev, prefill }) => {
+          console.log(79, this.state);
           return (
             <Formik
               initialValues={
                 prefill
                   ? {
-                      clinic: '5dc33f20acaf6659567af212',
+                      clinic: '5e025ebe112a290f5bf2cd26',
                       date: '2019-12-30T12:59',
                       providers: [],
                       reason: 'Educational Lunch',
-                      amountSpent: Number((100 * Math.random()).toFixed(2)),
+                      amountSpent: 400,
                       materials: [],
                     }
                   : {

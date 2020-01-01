@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -9,7 +9,7 @@ export class ErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     this.setState({
       error,
-      ...errorInfo
+      ...errorInfo,
     });
   }
 
@@ -21,7 +21,7 @@ export class ErrorBoundary extends React.Component {
           <h2>Click here to reload</h2>
         </a>
         {Object.entries(this.state).map(([key, value]) => (
-          <div style={{ outline: "solid", padding: "10px" }} key={key}>
+          <div style={{ outline: 'solid', padding: '10px' }} key={key}>
             {key} is {value.toString()}
           </div>
         ))}

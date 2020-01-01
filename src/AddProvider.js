@@ -15,7 +15,7 @@ export class AddProvider extends React.Component {
     super();
     this.state = {
       name: prefill ? random.first() + ' ' + random.last() : '',
-      clinic: '',
+      clinic: null,
       type: prefill === 'true' ? 'MD' : '',
       allMyClinics: [],
     };

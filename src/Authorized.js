@@ -7,12 +7,14 @@ import { AddClinic } from './AddClinic';
 import { PastVisits } from './PastVisits';
 import { url } from './url';
 import { Settings } from './Settings';
+import { Signup } from './Signup';
 const links = {
   'Past Visits': [PastVisits, 'pastvisits'],
   'Add Clinic': [AddClinic, 'addclinic'],
   'Add Provider': [AddProvider, 'addprovider'],
   'Add Visit': [AddVisit, 'addvisit'],
   Settings: [Settings, 'settings'],
+  // 'Sign Up': [Signup, 'signup'],
 };
 
 export class Authorized extends React.Component {

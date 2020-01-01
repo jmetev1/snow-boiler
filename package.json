@@ -11,7 +11,7 @@
     "build": "node scripts/build.js",
     "dev": "PORT=3001 node scripts/start.js",
     "dev-all": "run-p dev dev-server",
-    "dev-server": "supervisor -w util.js,server.js -- server.js",
+    "dev-server": "supervisor --inspect -w util.js,server.js -- server.js",
     "test": "mocha --recursive tests --exit",
     "testprod": "npm install && npm test",
     "next": "npm run build && rm -rf node_modules && npm i --production"

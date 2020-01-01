@@ -14,10 +14,9 @@ let options = {
   validate: true,
   prefill: false,
   showState: dev,
-  settings: false,
+  settings: true,
 };
 const newUser = !Object.keys(options).every(key => localStorage[key]);
-console.log(newUser);
 for (let key in options) {
   if (newUser) localStorage.setItem(key, options[key]);
   else options[key] = localStorage.getItem(key) === 'true' || false;
@@ -35,7 +34,6 @@ export default class App extends React.Component {
         this.setState(Object.fromEntries([[key, checked]]));
       },
     };
-    this.state.region = options.dev ? 'nm' : undefined;
   }
 
   submit = values => {
@@ -49,14 +47,12 @@ export default class App extends React.Component {
   };
 
   componentDidMount() {
-    if (!options.dev) {
-      this.props.region
-        .then(res => res.json())
-        .then(info => this.setState({ region: info.rep }))
-        .catch(e => {
-          throw new Error('app js setState on comp did mount');
-        });
-    }
+    this.props.region
+      .then(res => res.json())
+      .then(region => region && this.setState({ region }))
+      .catch(e => {
+        throw new Error('app js setState on comp did mount');
+      });
   }
 
   Login = () => (
@@ -71,10 +67,9 @@ export default class App extends React.Component {
         <Formik
           initialValues={
             process.env.NODE_ENV === 'development'
-              ? { username: 'nm', password: 'pglForLife' }
+              ? { username: 'test', password: 'wonderboy' }
               : { username: '', password: '' }
           }
-          // { username: "admin", password: "Wepgl4life" }}
           onSubmit={this.submit}
           validationSchema={LoginSchema}
         >
@@ -101,7 +96,7 @@ export default class App extends React.Component {
     return (
       <React.StrictMode>
         <OptionsContext.Provider value={this.state}>
-          {this.state && this.state.region ? (
+          {this.state.region ? (
             <Authorized route={this.props.route} />
           ) : (
             <this.Login />

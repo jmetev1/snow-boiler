@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
@@ -11,29 +11,30 @@ const VisitSchema = new Schema({
   receiptID: String,
   providers: [String],
   clinic: String,
-  clinicName: String
+  clinicName: String,
 });
+
 const ProviderSchema = new Schema({
   name: String,
   ytdTotal: Number,
   type: String,
   clinic: String,
-  rep: String
+  rep: String,
 });
 const ClinicSchema = new Schema({
   name: String,
   providers: [String],
   address: String,
-  rep: String
+  rep: String,
 });
-var ReceiptSchema = new Schema({
+const ReceiptSchema = new Schema({
   img: { data: Buffer, contentType: String },
-  name: String
+  name: String,
 });
 
 module.exports = {
-  ClinicModel: mongoose.model("ClinicModel", ClinicSchema),
-  ProviderModel: mongoose.model("ProviderModel", ProviderSchema),
-  ReceiptModel: mongoose.model("ReceiptModel", ReceiptSchema),
-  VisitModel: mongoose.model("VisitModel", VisitSchema)
+  ClinicModel: mongoose.model('ClinicModel', ClinicSchema),
+  ProviderModel: mongoose.model('ProviderModel', ProviderSchema),
+  ReceiptModel: mongoose.model('ReceiptModel', ReceiptSchema),
+  VisitModel: mongoose.model('VisitModel', VisitSchema),
 };

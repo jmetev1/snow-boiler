@@ -10,6 +10,7 @@ export class AddClinic extends React.Component {
       name: prefill ? `${random.last()} Clinic` : '',
       address: prefill ? '100 ' + random.middle() + ' St.' : '',
     };
+    console.log(13, prefill);
     this.SubmitButton = SubmitButton.bind(this);
   }
 

@@ -53,12 +53,9 @@ app.use(bodyParser.json());
 
 app.options('/login', cors());
 app.get('/login', cors(), (req, res) => {
-  let { rep } = req.session;
-  if (process.env.authentication !== 'true') {
-    rep = req.session.rep = 'nm';
-  }
-  if (rep) res.send(JSON.stringify({ rep }));
-  else res.json(false);
+  let { rep } = req && req.session;
+  console.log(58, rep);
+  res.json(rep ? rep : false);
 });
 
 app.get('/logout', cors(), (req, res) => {
@@ -67,7 +64,10 @@ app.get('/logout', cors(), (req, res) => {
 });
 
 app.post('/login', cors(), (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, newUser } = req.body;
+  // if (newUser) {
+
+  // }
   if (process.env[username] === password) {
     const rep = (req.session.rep = username);
     res.json(rep);
@@ -126,6 +126,7 @@ app.get('/receipt/:receiptID', async (req, res) => {
 });
 
 app.post('/visit', cors(), async (req, res) => {
+  console.log(129, req.session.rep);
   res.json(await util.addVisit({ ...req.body, rep: req.session.rep }));
 });
 

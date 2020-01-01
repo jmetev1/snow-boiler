@@ -131,7 +131,6 @@ export const compress = (e, cb) => {
   const width = 1000;
   const reader = new FileReader();
   reader.readAsDataURL(e.target.files[0]);
-  console.log(172, e.target.files[0].size / 1000);
   reader.onload = event => {
     const img = new Image();
     img.src = event.target.result;
