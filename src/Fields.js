@@ -24,8 +24,8 @@ export const MyTextInputField = props => (
 
 export const SelectClinic = ({ clinics = [], setClinic }) => {
   return (
-    <MySelectField label="Choose a Clinic" onChange={setClinic}>
-      {[{ _id: 0, name: 'Choose A Clinic' }, ...clinics].map(
+    <MySelectField label="Choose a clinic" onChange={setClinic}>
+      {[{ _id: 0, name: 'Choose a clinic' }, ...clinics].map(
         ({ _id, name }) => (
           <option key={_id} value={_id}>
             {name}
@@ -56,7 +56,7 @@ export const SubmitButton = function({ link = '' }) {
   if (waiting && !submitted) return 'Submitting Data';
   return submitted ? (
     <div>
-      'Successfully Submitted'
+      Successfully Submitted
       <div>{link || <button onClick={reload}>Add Another</button>}</div>
     </div>
   ) : (

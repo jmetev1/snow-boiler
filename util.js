@@ -36,10 +36,51 @@ exports.getClinic = async rep => {
 };
 
 exports.addVisit = async (req, res, cb) => {
-  const result = await VisitModel.create(req);
-  result.email = await exports.checkSpending(req.rep);
-  console.log(result.email);
-  return result;
+  const { _id, providers } = await VisitModel.create(req);
+  if (_id) {
+    //new way
+    const emailResult = await exports.checkMaxAndEmail(
+      req.rep,
+      await this.totalsForProviders(providers)
+    );
+    debugger;
+    return { _id, email: emailResult };
+
+    //old way
+    // const spendingByDoctor = await exports.spendingByDoctor(req.rep);
+
+    // return { _id, email: await exports.checkMaxAndEmail(req.rep, spendingByDoctor) };
+  }
+};
+
+exports.totalsForProviders = async providers => {
+  const year = new Date().getFullYear();
+  const min = year + '-01-01',
+    max = year + '-12-31';
+  const visits = await VisitModel.find({
+    date: { $gte: min, $lte: max },
+    providers: {
+      $in: providers,
+    },
+  });
+  const spendingByDoctor = visits.reduce((a, c) => {
+    const { providers, amountSpent } = c;
+    providers.forEach(p => {
+      a[p] = (a[p] || 0) + amountSpent / providers.length;
+    });
+    return a;
+  }, {});
+
+  const myProviders = await ProviderModel.find();
+  myProviders.forEach(({ name, _id }) => {
+    const amount = spendingByDoctor[_id];
+    if (amount)
+      spendingByDoctor[_id] = {
+        amount,
+        name,
+      };
+  });
+  return spendingByDoctor;
 };
 
 exports.addPhoto = async (name, req, res) =>
@@ -83,35 +124,30 @@ exports.spendingByDoctor = async (rep, clinic) => {
         name,
       };
   });
+  // debugger;
   return spendingByDoctor;
 };
-console.log(89);
-exports.checkSpending = async rep => {
-  const spendingByDoctor = await exports.spendingByDoctor(rep);
+
+exports.checkMaxAndEmail = async (rep, spendingByDoctor) => {
   const maxSpend = 375;
   const overLimit = [];
   console.log(spendingByDoctor);
   for (let [key, value] of Object.entries(spendingByDoctor)) {
     if (value.amount > maxSpend) overLimit.push([key, value]);
-    console.log(value.amountSpent, maxSpend);
   }
-  console.log(113, 'check spending', rep, overLimit);
-  const result = overLimit.length
-    ? await email(overLimit, rep)
-    : 'no email sent';
-  return result;
+  return overLimit.length ? await email(overLimit, rep) : 'no email sent';
 };
 
-const email = (toSend, rep) => {
-  console.log('were emailing');
-
-  const result = toSend.map(ar => {
+const email = (providers, rep) => {
+  const result = providers.map(ar => {
     const [id, obj] = ar;
     const { amount, name } = obj;
     const sgMail = require('@sendgrid/mail');
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
     const msg = {
-      to: rep === 'jack' ? 'j.metevier@gmail.com' : process.env.BOSS_EMAIL,
+      to: ['j.metevier@gmail.com', 'jmetev1@gmail.com'],
+      // to: rep === 'jack' ? 'j.metevier@gmail.com' : process.env.BOSS_EMAIL,
       from: 'AIsupervisor@pgl.com',
       subject: 'approaching provider spending limit',
       html: `<strong>rep ${rep} has spent $${amount} at provider ${name}</strong>`,
@@ -121,7 +157,7 @@ const email = (toSend, rep) => {
   });
   return result;
 };
-// exports.checkSpending = async (rep) => {
+// exports.checkMaxAndEmail = async (rep) => {
 //   const myVisits = await VisitModel.find({ rep });
 //   const spendingByDoctor = myVisits.reduce((a, c) => {
 //     const { providers, amountSpent } = c;

@@ -1,14 +1,10 @@
 const express = require('express');
-const mongoose = require('mongoose');
-
-const port = process.env.PORT || 3000;
 const app = express();
 const path = require('path');
+const cors = require('cors');
+const dotenv = require('dotenv');
 
 const buildDir = path.join(__dirname, 'build');
-const cors = require('cors');
-
-const dotenv = require('dotenv');
 
 dotenv.load();
 const notProduction = process.env.NODE_ENV !== 'PRODUCTION';
@@ -28,16 +24,12 @@ const store = new MongoDBStore(
     databaseName: 'poolmap',
     collection: 'mySessions',
   },
-  (error, suc) => {
-    // console.log(29, 'error', error);
-    console.log(30, suc);
-    // Should have gotten an error
-  }
+  (error, suc) => {}
 );
 
 const util = require('./util');
 
-app.set('port', port);
+app.set('port', process.env.PORT || 3000);
 app.use(
   session({
     name: 'server-session-cookie-id',
@@ -46,16 +38,14 @@ app.use(
     saveUninitialized: true,
     resave: false,
   }),
-  fileupload()
+  fileupload(),
+  bodyParser.json()
 );
-
-app.use(bodyParser.json());
 
 app.options('/login', cors());
 app.get('/login', cors(), (req, res) => {
   let { rep } = req && req.session;
-  console.log(58, rep);
-  res.json(rep ? rep : false);
+  res.json(rep || false);
 });
 
 app.get('/logout', cors(), (req, res) => {
@@ -65,13 +55,12 @@ app.get('/logout', cors(), (req, res) => {
 
 app.post('/login', cors(), (req, res) => {
   const { username, password, newUser } = req.body;
-  // if (newUser) {
-
-  // }
   if (process.env[username] === password) {
     const rep = (req.session.rep = username);
     res.json(rep);
-  } else res.send('false');
+  } else {
+    res.json(false);
+  }
 });
 app.options('/visit', cors());
 
@@ -127,7 +116,12 @@ app.get('/receipt/:receiptID', async (req, res) => {
 
 app.post('/visit', cors(), async (req, res) => {
   console.log(129, req.session.rep);
-  res.json(await util.addVisit({ ...req.body, rep: req.session.rep }));
+  const addVisitResult = await util.addVisit({
+    ...req.body,
+    rep: req.session.rep,
+  });
+  console.log(addVisitResult);
+  res.json(addVisitResult);
 });
 
 app.post('/clinic', cors(), async (req, res) =>

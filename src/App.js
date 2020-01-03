@@ -33,6 +33,7 @@ export default class App extends React.Component {
         localStorage[key] = checked;
         this.setState(Object.fromEntries([[key, checked]]));
       },
+      region: null,
     };
   }
 
@@ -92,15 +93,17 @@ export default class App extends React.Component {
       </Pane>
     </Pane>
   );
+  route(region) {
+    if (region) return <Authorized route={this.props.route} />;
+    if (region === null) return 'Loading';
+    if (region === false) return <this.Login />;
+    else return 'something weird happened';
+  }
   render() {
     return (
       <React.StrictMode>
         <OptionsContext.Provider value={this.state}>
-          {this.state.region ? (
-            <Authorized route={this.props.route} />
-          ) : (
-            <this.Login />
-          )}
+          {this.route(this.state.region)}
         </OptionsContext.Provider>
       </React.StrictMode>
     );

@@ -45,7 +45,9 @@ class AddVisit extends React.Component {
     })
       .then(res => res.json())
       .then(res => {
-        console.log(48, res);
+        if (localStorage.dev) {
+          res.email.forEach(console.table);
+        }
         if (res && res._id) {
           location.reload();
           alert('Successfully Submitted');
@@ -83,7 +85,7 @@ class AddVisit extends React.Component {
                 prefill
                   ? {
                       clinic: '5e025ebe112a290f5bf2cd26',
-                      date: '2019-12-30T12:59',
+                      date: '2020-11-30T12:59',
                       providers: [],
                       reason: 'Educational Lunch',
                       amountSpent: 400,
