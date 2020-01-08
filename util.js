@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const sgMail = require('@sendgrid/mail');
 dotenv.load();
 var fs = require('fs');
 let databaseError;
@@ -124,63 +125,37 @@ exports.spendingByDoctor = async (rep, clinic) => {
         name,
       };
   });
-  // debugger;
   return spendingByDoctor;
 };
 
 exports.checkMaxAndEmail = async (rep, spendingByDoctor) => {
-  const maxSpend = 375;
+  const maxSpend = 350;
   const overLimit = [];
-  console.log(spendingByDoctor);
   for (let [key, value] of Object.entries(spendingByDoctor)) {
     if (value.amount > maxSpend) overLimit.push([key, value]);
   }
   return overLimit.length ? await email(overLimit, rep) : 'no email sent';
 };
-
-const email = (providers, rep) => {
-  const result = providers.map(ar => {
-    const [id, obj] = ar;
-    const { amount, name } = obj;
-    const sgMail = require('@sendgrid/mail');
+const emailByRep = {
+  nm: 'jmetev1@gmail.com',
+};
+const email = (providers, rep) =>
+  providers.map(ar => {
+    const { amount, name } = Array.isArray(ar) && ar[1];
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
     const msg = {
-      to: ['j.metevier@gmail.com', 'jmetev1@gmail.com'],
-      // to: rep === 'jack' ? 'j.metevier@gmail.com' : process.env.BOSS_EMAIL,
-      from: 'AIsupervisor@pgl.com',
+      to: [emailByRep[rep]],
+      from: 'PGL_Monitoring_app@pgl.com',
       subject: 'approaching provider spending limit',
       html: `<strong>rep ${rep} has spent $${amount} at provider ${name}</strong>`,
     };
+    if (amount > 399) {
+      msg.subject = 'Exceeded provider spending limit';
+      msg.to.push(process.env.BOSS_EMAIL);
+    }
     sgMail.send(msg);
     return msg;
   });
-  return result;
-};
-// exports.checkMaxAndEmail = async (rep) => {
-//   const myVisits = await VisitModel.find({ rep });
-//   const spendingByDoctor = myVisits.reduce((a, c) => {
-//     const { providers, amountSpent } = c;
-//     console.log(providers)
-//     providers.forEach((p) => { a[p] = (a[p] || 0) + (amountSpent / providers.length); });
-//     return a;
-//   }, {});
-//   const myProviders = await ProviderModel.find({ rep });
-//   myProviders.forEach(({ name, _id }) => {
-//     const amount = spendingByDoctor[_id];
-//     if (amount) spendingByDoctor[_id] = {
-//       amount, name,
-//     };
-//   });
-//   const max = 375;
-//   const overLimit = [];
-//   for (let [key, value] of Object.entries(spendingByDoctor)) {
-//     if (value.amount > max) overLimit.push([key, value])
-//   }
-//   console.log('check spending', overLimit);
-//   if (overLimit.length) email(overLimit, rep);
-//   return spendingByDoctor;
-// };
 
 exports.getVisits = async rep => {
   rep = rep === 'admin' ? {} : { rep };

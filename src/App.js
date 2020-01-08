@@ -1,111 +1,51 @@
-import React from 'react';
-import { Button, Pane } from 'evergreen-ui';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
 import './App.css';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { url } from './url';
-import { Authorized } from './Authorized';
-import { Err, MyTextInputField } from './Fields';
-import { LoginSchema } from './Validation';
-import logo from './image/pnglogo.png';
-const dev = process.env.NODE_ENV === 'development';
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import { PrivateRoute, routeNames, Loading } from './Fields';
 
-let options = {
-  dev,
-  validate: true,
-  prefill: false,
-  showState: dev,
-  settings: true,
-};
-const newUser = !Object.keys(options).every(key => localStorage[key]);
-for (let key in options) {
-  if (newUser) localStorage.setItem(key, options[key]);
-  else options[key] = localStorage.getItem(key) === 'true' || false;
-}
-
-export const OptionsContext = React.createContext({});
-
-export default class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      ...options,
-      updateOptions: (key, { target: { checked } }) => {
-        localStorage[key] = checked;
-        this.setState(Object.fromEntries([[key, checked]]));
-      },
-      region: null,
-    };
-  }
-
-  submit = values => {
-    fetch(`${url}login`, {
-      method: 'POST',
-      body: JSON.stringify(values),
-      headers: { 'Content-Type': 'application/json' },
-    })
-      .then(r => r.json())
-      .then(region => this.setState({ region }));
-  };
-
-  componentDidMount() {
-    this.props.region
+const App = ({ userPromise }) => {
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    userPromise
       .then(res => res.json())
-      .then(region => region && this.setState({ region }))
+      .then(user => {
+        setUser(user);
+        setLoading(false);
+      })
       .catch(e => {
         throw new Error('app js setState on comp did mount');
       });
-  }
-
-  Login = () => (
-    <Pane
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      height="70vh"
-    >
-      <Pane width="90vw" border="default">
-        <img src={logo} height="47px" alt="pgl logo" />
-        <Formik
-          initialValues={
-            process.env.NODE_ENV === 'development'
-              ? { username: 'test', password: 'wonderboy' }
-              : { username: '', password: '' }
-          }
-          onSubmit={this.submit}
-          validationSchema={LoginSchema}
-        >
-          {({ isSubmitting }) => (
-            <Form>
-              <ErrorMessage component={Err} name="username" />
-              <Field as={MyTextInputField} name="username" label="Username" />
-              <ErrorMessage component={Err} name="password" />
-              <Field
-                as={MyTextInputField}
-                name="password"
-                label="Password"
-                type="password"
-              />
-              <Button type="submit" disabled={isSubmitting} children="Submit" />
-              {this.state.region === false && 'login failed'}
-            </Form>
-          )}
-        </Formik>
-      </Pane>
-    </Pane>
+  }, [userPromise]);
+  return loading ? (
+    <Loading />
+  ) : (
+    <Router>
+      <Route
+        exact
+        path="/"
+        render={() =>
+          user ? <Redirect to="/addVisit" /> : <Redirect to="/login" />
+        }
+      />
+      <Suspense fallback={<Loading />}>
+        {Object.keys(routeNames).map(string => (
+          <PrivateRoute
+            name={string.split(' ').join('')}
+            key={string.split(' ').join('')}
+            user={user}
+          />
+        ))}
+        <Route
+          path="/login"
+          render={() => {
+            const Component = lazy(() => import(`./Login`));
+            return <Component setUser={setUser} user={user} />;
+          }}
+        />
+      </Suspense>
+    </Router>
   );
-  route(region) {
-    if (region) return <Authorized route={this.props.route} />;
-    if (region === null) return 'Loading';
-    if (region === false) return <this.Login />;
-    else return 'something weird happened';
-  }
-  render() {
-    return (
-      <React.StrictMode>
-        <OptionsContext.Provider value={this.state}>
-          {this.route(this.state.region)}
-        </OptionsContext.Provider>
-      </React.StrictMode>
-    );
-  }
-}
+};
+
+export default App;

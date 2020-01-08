@@ -45,6 +45,7 @@ app.use(
 app.options('/login', cors());
 app.get('/login', cors(), (req, res) => {
   let { rep } = req && req.session;
+  console.log(48, rep);
   res.json(rep || false);
 });
 

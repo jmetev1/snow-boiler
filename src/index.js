@@ -1,21 +1,18 @@
-import React from 'react';
+import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import { url } from './url';
 import { ErrorBoundary } from './ErrorBoundary';
-// import * as serviceWorker from './serviceWorker';
 
-const region = fetch(url + 'login', { credentials: 'include' });
+if (!window.pglOptions) window.pglOptions = {};
+const user = fetch(url + 'login', { credentials: 'include' });
 
 ReactDOM.render(
   <ErrorBoundary>
-    <App
-      region={region}
-      route={
-        location.pathname.substr(1) //eslint-disable-line
-      }
-    />
+    <StrictMode>
+      <App userPromise={user} />
+    </StrictMode>
   </ErrorBoundary>,
   document.getElementById('root')
 );

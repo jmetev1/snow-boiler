@@ -3,7 +3,7 @@ import { url } from './url';
 import { Wrapper, SelectClinic, MySelectField } from './Fields';
 import { OneClinic } from './OneClinic';
 
-export class PastVisits extends React.Component {
+export default class PastVisits extends React.Component {
   state = {};
   componentDidMount() {
     fetch(url + 'clinic')

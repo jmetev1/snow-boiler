@@ -3,7 +3,7 @@ import random from 'random-name';
 import { url, automatic } from './url';
 import { SubmitButton, DevInfo, MyTextInputField } from './Fields';
 const prefill = localStorage.prefill === 'true';
-export class AddClinic extends React.Component {
+export default class AddClinic extends React.Component {
   constructor() {
     super();
     this.state = {

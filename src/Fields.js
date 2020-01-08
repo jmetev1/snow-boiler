@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { lazy } from 'react';
+import logo from './image/pnglogo.png';
 import {
   Pane,
   Button,
@@ -7,7 +8,7 @@ import {
   Textarea,
 } from 'evergreen-ui';
 import { url } from './url';
-import { OptionsContext } from './App';
+import { Route, Redirect, NavLink } from 'react-router-dom';
 
 const height = 48;
 
@@ -64,13 +65,8 @@ export const SubmitButton = function({ link = '' }) {
   );
 };
 
-export const DevInfo = ({ children }) => (
-  <OptionsContext.Consumer>
-    {({ showState }) => {
-      return showState ? <>{children}</> : null;
-    }}
-  </OptionsContext.Consumer>
-);
+export const DevInfo = ({ children }) =>
+  localStorage.showState ? <>{children}</> : null;
 
 export const addValue = function(key, event) {
   console.log(event, event.target);
@@ -157,18 +153,106 @@ export const compress = (e, cb) => {
   };
 };
 
-// export const SelectProvider = function ({ providers }) {
-//   return providers ?
-//     <Wrapper>
-//       Choose Providers Present
-//       {Object.values(providers).map(({ _id, name, chosen }) => <Checkbox
-//         key={_id}
-//         label={name}
-//         checked={chosen}
-//         onChange={() => {
-//           providers[_id].chosen = !chosen
-//           this.setState({ providerOptionsAtOneClinic: providers })
-//         }}
-//       />)}
-//     </Wrapper> : 'Loading Providers'
-// }
+export const routeNames = {
+  'Past Visits': ['pastvisits'],
+  'Add Clinic': ['addclinic'],
+  'Add Provider': ['addprovider'],
+  'Add Visit': ['addvisit'],
+  Settings: ['settings'],
+  // 'Sign Up': [Signup, 'signup'],
+};
+
+const Header = () => {
+  const MyButton = props => (
+    <Button style={{ flex: '1 1 33%' }} height="36" {...props} />
+  );
+  const style = { margin: 'auto' };
+  const logout = () => fetch(url + 'logout').then(() => location.reload()); //eslint-disable-line
+
+  return (
+    <nav style={{ display: 'flex', flexWrap: 'wrap' }}>
+      <MyButton
+        key="logout"
+        onClick={logout}
+        children={<span style={style}>Logout</span>}
+      />
+      {Object.entries(routeNames).map(([label, [url]]) => {
+        if (localStorage.settings !== 'true' && label === 'Settings')
+          return null;
+        else
+          return (
+            <MyButton
+              key={label}
+              appearance={
+                window.location.href.includes(url) ? 'primary' : 'default'
+              }
+            >
+              <NavLink
+                to={`/${url}`}
+                style={{
+                  width: '100%',
+                  textDecoration: 'none',
+                  color: 'unset',
+                }}
+              >
+                <span style={style}>{label}</span>
+              </NavLink>
+            </MyButton>
+          );
+      })}
+    </nav>
+  );
+};
+
+export const Loading = () => (
+  <Pane
+    paddingTop={15}
+    paddingBottom={100}
+    height="100vh"
+    width="100vw"
+    display="flex"
+    alignItems="center"
+    justifyContent="center"
+  >
+    <div
+      width="90vw"
+      border="default"
+      style={{
+        textAlign: 'center',
+      }}
+    >
+      <img src={logo} height="47px" alt="pgl logo" />
+      <h4>Please wait, loading </h4>
+    </div>
+  </Pane>
+);
+
+export const PrivateRoute = ({ name, user, ...rest }) => {
+  const Component = lazy(() => import(`./${name}`));
+  return (
+    <Route
+      {...rest}
+      path={`/${name.toLowerCase()}`}
+      render={props =>
+        user ? (
+          <>
+            <Header />
+            <Pane
+              paddingTop={15}
+              paddingBottom={100}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Pane width="90vw" border="default">
+                <Component {...props} user={user} />
+              </Pane>
+            </Pane>
+          </>
+        ) : (
+          <Redirect to="/login" />
+        )
+      }
+    />
+  );
+};
