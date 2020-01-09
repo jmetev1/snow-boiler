@@ -6,7 +6,13 @@ var fs = require('fs');
 let databaseError;
 
 const Models = require('./models');
-const { ReceiptModel, VisitModel, ProviderModel, ClinicModel } = Models;
+const {
+  ReceiptModel,
+  VisitModel,
+  ProviderModel,
+  ClinicModel,
+  UserModel,
+} = Models;
 
 mongoose
   .connect(
@@ -21,7 +27,9 @@ const db = mongoose.connection;
 db.on('error', e => (databaseError = e));
 
 exports.addProvider = async (req, res, cb) => await ProviderModel.create(req);
-
+exports.addUser = async body => {
+  return await UserModel.create(body);
+};
 exports.providersByRep = async rep => {
   const allProviders = await ProviderModel.find({ rep });
   return allProviders.reduce((a, c) => {
@@ -137,6 +145,7 @@ exports.checkMaxAndEmail = async (rep, spendingByDoctor) => {
 const emailByRep = {
   nm: 'jmetev1@gmail.com',
 };
+
 const email = (providers, rep) =>
   providers.map(ar => {
     const { amount, name } = Array.isArray(ar) && ar[1];

@@ -43,6 +43,13 @@ const App = ({ userPromise }) => {
             return <Component setUser={setUser} user={user} />;
           }}
         />
+        <Route
+          path="/signup"
+          render={() => {
+            const Component = lazy(() => import(`./Signup`));
+            return <Component setUser={setUser} user={user} />;
+          }}
+        />
       </Suspense>
     </Router>
   );

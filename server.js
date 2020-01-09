@@ -27,7 +27,7 @@ const store = new MongoDBStore(
   (error, suc) => {}
 );
 
-const util = require('./util');
+const db = require('./db');
 
 app.set('port', process.env.PORT || 3000);
 app.use(
@@ -65,25 +65,31 @@ app.post('/login', cors(), (req, res) => {
 });
 app.options('/visit', cors());
 
-app.get('/visits', cors(), async (req, res) => {
-  res.json(await util.getVisitsThisYear(req.session.rep));
+app.post('/user', ({session, body}, res) => {
+  console.log(session, body)
+
 });
+
+app.get('/visits', cors(), async (req, res) => {
+  res.json(await db.getVisitsThisYear(req.session.rep));
+});
+
 app.options('/clinic', cors());
 
 app.options('/provider', cors());
 app.get('/getproviders', cors(), async (req, res) => {
-  res.json(await util.providersByRep(req.session.rep));
+  res.json(await db.providersByRep(req.session.rep));
 });
 
 app.get('/getSpendingByDoctor/:clinicID', cors(), async (req, res) => {
-  res.json(await util.spendingByDoctor(req.session.rep, req.params.clinicID));
+  res.json(await db.spendingByDoctor(req.session.rep, req.params.clinicID));
 });
 
 /* pass array of clinics to get all providers for each. */
 app.post('/provider', cors(), async ({ body, session }, res) => {
   // console.log(98, body, session, res);
   res.json(
-    await util.addProvider({
+    await db.addProvider({
       ...body,
       rep: session.rep,
     })
@@ -97,12 +103,12 @@ app.post('/receipt', async (req, res) => {
   console.log(109, path);
   req.files.myFile.mv(path, async err => {
     if (err) return res.status(500).send(err);
-    res.json((await util.addPhoto(name))._id);
+    res.json((await db.addPhoto(name))._id);
   });
 });
 
 app.get('/receipt/:receiptID', async (req, res) => {
-  const [doc] = await util.receipt(req.params.receiptID);
+  const [doc] = await db.receipt(req.params.receiptID);
   if (doc) {
     res.contentType(doc.img.contentType);
     res.send(doc.img.data);
@@ -113,7 +119,7 @@ app.get('/receipt/:receiptID', async (req, res) => {
 
 app.post('/visit', cors(), async (req, res) => {
   console.log(129, req.session.rep);
-  const addVisitResult = await util.addVisit({
+  const addVisitResult = await db.addVisit({
     ...req.body,
     rep: req.session.rep,
   });
@@ -123,7 +129,7 @@ app.post('/visit', cors(), async (req, res) => {
 
 app.post('/clinic', cors(), async (req, res) =>
   res.json(
-    await util.addClinic({
+    await db.addClinic({
       ...req.body,
       rep: req.session.rep,
     })
@@ -131,9 +137,10 @@ app.post('/clinic', cors(), async (req, res) =>
 );
 
 app.get('/clinic', cors(), async (req, res) => {
-  const allClinics = await util.getClinic(req.session.rep);
+  const allClinics = await db.getClinic(req.session.rep);
   res.send(JSON.stringify(allClinics));
 });
+
 console.log(145, process.env.NODE_ENV);
 if (process.env.NODE_ENV !== 'development') {
   app.get('*', cors(), (req, res) => {

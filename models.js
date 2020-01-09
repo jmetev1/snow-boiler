@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
-  name: String,
   email: String,
   password: String,
 });
@@ -42,4 +41,5 @@ module.exports = {
   ProviderModel: mongoose.model('ProviderModel', ProviderSchema),
   ReceiptModel: mongoose.model('ReceiptModel', ReceiptSchema),
   VisitModel: mongoose.model('VisitModel', VisitSchema),
+  UserModel: mongoose.model('UserModel', UserSchema),
 };

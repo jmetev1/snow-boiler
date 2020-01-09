@@ -69,7 +69,6 @@ export const DevInfo = ({ children }) =>
   window.pglOptions.showState && <>{children}</>;
 
 export const addValue = function(key, event) {
-  console.log(event, event.target);
   const newState = {};
   const { value } = event.target;
   newState[key] = value;
@@ -79,20 +78,21 @@ export const addValue = function(key, event) {
 export const OneVisit = ({ visit = {}, spending }) => {
   if (!visit._id) return 'Choose a Date';
 
-  const { amountSpent, providers, materials, receiptID } = visit;
+  const { amountSpent, providers, materials, receiptID, rep } = visit;
 
   return (
     <>
       <h4>For This Visit</h4>
       <div>Amount Spent: ${amountSpent}</div>
-      <div>Materials:{materials.length ? materials.join(' ') : 'None'}</div>
+      <div>Materials: {materials.length ? materials.join(' ') : 'None'}</div>
+      <div>Rep: {rep} </div>
       <div>
         Providers Present:
         <ol>
           {providers.map(providerID => {
             if (spending[providerID])
               return <li key={providerID}>{spending[providerID].name}</li>;
-            else return 'loading';
+            else return 'Loading';
           })}
         </ol>
       </div>
@@ -159,10 +159,7 @@ export const routeNames = {
   'Add Provider': ['addprovider'],
   'Add Visit': ['addvisit'],
   Settings: ['settings'],
-  // 'Sign Up': [Signup, 'signup'],
 };
-
-const adminRoutes = new Set(['Past Visits']);
 
 const Header = ({ user }) => {
   const MyButton = props => (
