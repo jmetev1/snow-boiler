@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { showState, url } from './url';
+import { url } from './url';
 import { MySelectField, OneVisit } from './Fields';
 
 export const OneClinic = ({ clinicID, visits = [], clinicName }) => {
@@ -10,6 +10,7 @@ export const OneClinic = ({ clinicID, visits = [], clinicName }) => {
     updateVisit(visits.find(({ _id }) => _id === value));
 
   useEffect(() => updateVisit({}), [clinicID]);
+
   useEffect(() => {
     fetch(`${url}getSpendingByDoctor/${clinicID}`)
       .then(d => d.json())
@@ -19,7 +20,7 @@ export const OneClinic = ({ clinicID, visits = [], clinicName }) => {
   const nameAmountPairs = Object.values(spending).sort(
     ({ amount }, b) => b.amount - amount
   );
-  console.log(22, visits);
+
   if (nameAmountPairs.length)
     return (
       <>

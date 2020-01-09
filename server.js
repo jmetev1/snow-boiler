@@ -66,7 +66,7 @@ app.post('/login', cors(), (req, res) => {
 app.options('/visit', cors());
 
 app.get('/visits', cors(), async (req, res) => {
-  res.json(await util.getVisits(req.session.rep));
+  res.json(await util.getVisitsThisYear(req.session.rep));
 });
 app.options('/clinic', cors());
 
@@ -77,10 +77,6 @@ app.get('/getproviders', cors(), async (req, res) => {
 
 app.get('/getSpendingByDoctor/:clinicID', cors(), async (req, res) => {
   res.json(await util.spendingByDoctor(req.session.rep, req.params.clinicID));
-});
-
-app.get('/getVisitsByClinic/:clinicID', cors(), async (req, res) => {
-  res.json(await util.visitsByClinic(req.session.rep));
 });
 
 /* pass array of clinics to get all providers for each. */

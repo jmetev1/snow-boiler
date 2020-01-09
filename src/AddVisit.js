@@ -44,7 +44,7 @@ export default class AddVisit extends React.Component {
     })
       .then(res => res.json())
       .then(res => {
-        if (localStorage.dev) {
+        if (window.pglOptions.dev) {
           res.email.forEach(console.table);
         }
         if (res && res._id) {

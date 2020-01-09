@@ -5,13 +5,30 @@ import App from './App';
 import { url } from './url';
 import { ErrorBoundary } from './ErrorBoundary';
 
+const dev = process.env.NODE_ENV === 'development';
+
 if (!window.pglOptions) window.pglOptions = {};
-const user = fetch(url + 'login', { credentials: 'include' });
+const userPromise = fetch(url + 'login', { credentials: 'include' });
+
+for (let [key, value] of Object.entries({
+  dev,
+  validate: true,
+  prefill: dev,
+  showState: dev,
+  settings: dev,
+})) {
+  const ls = localStorage[key]; //it's a string!!!!!
+  if (ls) {
+    window.pglOptions[key] = ls === 'true' ? true : false;
+  } else {
+    window.pglOptions[key] = value;
+  }
+}
 
 ReactDOM.render(
   <ErrorBoundary>
     <StrictMode>
-      <App userPromise={user} />
+      <App userPromise={userPromise} />
     </StrictMode>
   </ErrorBoundary>,
   document.getElementById('root')

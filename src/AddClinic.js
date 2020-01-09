@@ -2,7 +2,8 @@ import React from 'react';
 import random from 'random-name';
 import { url, automatic } from './url';
 import { SubmitButton, DevInfo, MyTextInputField } from './Fields';
-const prefill = localStorage.prefill === 'true';
+const { prefill } = window.pglOptions;
+
 export default class AddClinic extends React.Component {
   constructor() {
     super();
@@ -10,7 +11,6 @@ export default class AddClinic extends React.Component {
       name: prefill ? `${random.last()} Clinic` : '',
       address: prefill ? '100 ' + random.middle() + ' St.' : '',
     };
-    console.log(13, prefill);
     this.SubmitButton = SubmitButton.bind(this);
   }
 

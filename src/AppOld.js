@@ -16,10 +16,10 @@
 //   showState: dev,
 //   settings: true,
 // };
-// const newUser = !Object.keys(options).every(key => localStorage[key]);
+// const newUser = !Object.keys(options).every(key => window.pglOptions[key]);
 // for (let key in options) {
-//   if (newUser) localStorage.setItem(key, options[key]);
-//   else options[key] = localStorage.getItem(key) === 'true' || false;
+//   if (newUser) window.pglOptions.setItem(key, options[key]);
+//   else options[key] = window.pglOptions.getItem(key) === 'true' || false;
 // }
 
 // export const OptionsContext = React.createContext({});
@@ -30,7 +30,7 @@
 //     this.state = {
 //       ...options,
 //       updateOptions: (key, { target: { checked } }) => {
-//         localStorage[key] = checked;
+//         window.pglOptions[key] = checked;
 //         this.setState(Object.fromEntries([[key, checked]]));
 //       },
 //       region: null,

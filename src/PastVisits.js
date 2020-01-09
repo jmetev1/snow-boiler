@@ -1,39 +1,40 @@
 import React, { useState } from 'react';
 import { url } from './url';
-import { Wrapper, SelectClinic, MySelectField } from './Fields';
+import { Wrapper, SelectClinic } from './Fields';
 import { OneClinic } from './OneClinic';
 
 export default class PastVisits extends React.Component {
   state = {};
   componentDidMount() {
-    fetch(url + 'clinic')
-      .then(d => d.json())
-      .then(allMyClinics => {
-        this.setState({ allMyClinics }, () => {
-          if (process.env.NODE_ENV === 'development')
-            this.setState({ clinic: '5dc33f20acaf6659567af212' });
-        });
-      });
-    fetch(url + 'visits')
-      .then(d => d.json())
-      .then(allVisits => {
-        this.setState({ allVisits }, () => {
-          const byClinic = allVisits.reduce((a, v) => {
-            const { clinic } = v;
-            a[clinic] = a[clinic] ? a[clinic].concat([v]) : [v];
-            return a;
-          }, {});
-          this.setState({ byClinic });
+    Promise.all(['visits', 'clinic'].map(type => fetch(url + type)))
+      .then(res => Promise.all(res.map(r => r.json())))
+      .then(([allVisits, clinics]) => {
+        const byClinic = allVisits.reduce((a, v) => {
+          const { clinic } = v;
+          a[clinic] = a[clinic] ? a[clinic].concat([v]) : [v];
+          return a;
+        }, {});
+
+        const clinicsThatHaveVisits = clinics.filter(
+          ({ _id }) => byClinic[_id]?.length
+        );
+        this.setState({
+          clinicsThatHaveVisits,
+          byClinic,
         });
       });
   }
 
   render() {
-    const { allMyClinics, byClinic } = this.state;
+    const { clinicsThatHaveVisits, byClinic } = this.state;
+
     return (
       <Wrapper>
         {byClinic ? (
-          <SelectClinicModule byClinic={byClinic} clinics={allMyClinics} />
+          <SelectClinicModule
+            byClinic={byClinic}
+            clinics={clinicsThatHaveVisits}
+          />
         ) : (
           'Loading'
         )}
@@ -60,3 +61,6 @@ const SelectClinicModule = ({ clinics, byClinic }) => {
     </>
   );
 };
+/*
+get spending by docotr seems to fail with admin
+*/

@@ -15,7 +15,7 @@
 //     this.state = {
 //       ...options,
 //       updateOptions: (key, { target: { checked } }) => {
-//         localStorage[key] = checked;
+//         window.pglOptions[key] = checked;
 //         this.setState(Object.fromEntries([[key, checked]]));
 //       },
 //     };

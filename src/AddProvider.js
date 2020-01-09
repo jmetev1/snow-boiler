@@ -8,7 +8,7 @@ import {
   MySelectField,
   MyTextInputField,
 } from './Fields';
-const prefill = localStorage.prefill === 'true';
+const { prefill } = window.pglOptions;
 
 export default class AddProvider extends React.Component {
   constructor() {

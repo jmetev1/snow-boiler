@@ -97,17 +97,16 @@ exports.receipt = async (_id, req, res) => await ReceiptModel.find({ _id });
 
 exports.addClinic = async (req, res, cb) => await ClinicModel.create(req);
 
-exports.visitsByClinic = async rep => {
-  const visits = await VisitModel.find({ rep });
-};
 exports.spendingByDoctor = async (rep, clinic) => {
-  console.log(63);
+  const query = rep === 'admin' ? {} : { rep };
   const year = new Date().getFullYear();
   const min = year + '-01-01';
   const max = year + '-12-31';
-  const query = { rep, date: { $gte: min, $lte: max } };
-  if (clinic) query.clinic = clinic;
-  const myVisitsThisYear = await VisitModel.find(query);
+  const myVisitsThisYear = await VisitModel.find({
+    ...query,
+    date: { $gte: min, $lte: max },
+    clinic: clinic || null,
+  });
   const spendingByDoctor = myVisitsThisYear.reduce((a, c) => {
     const { providers, amountSpent } = c;
     providers.forEach(p => {
@@ -115,8 +114,7 @@ exports.spendingByDoctor = async (rep, clinic) => {
     });
     return a;
   }, {});
-  rep = rep === 'admin' ? {} : { rep };
-  const myProviders = await ProviderModel.find(rep);
+  const myProviders = await ProviderModel.find(query);
   myProviders.forEach(({ name, _id }) => {
     const amount = spendingByDoctor[_id];
     if (amount)
@@ -160,4 +158,11 @@ const email = (providers, rep) =>
 exports.getVisits = async rep => {
   rep = rep === 'admin' ? {} : { rep };
   return await VisitModel.find(rep);
+};
+
+exports.getVisitsThisYear = async rep => {
+  const year = new Date().getFullYear();
+  return await VisitModel.find({
+    date: { $gte: year + '-01-01', $lte: year + '-12-31' },
+  });
 };

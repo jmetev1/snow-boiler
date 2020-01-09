@@ -66,7 +66,7 @@ export const SubmitButton = function({ link = '' }) {
 };
 
 export const DevInfo = ({ children }) =>
-  localStorage.showState ? <>{children}</> : null;
+  window.pglOptions.showState && <>{children}</>;
 
 export const addValue = function(key, event) {
   console.log(event, event.target);
@@ -162,7 +162,9 @@ export const routeNames = {
   // 'Sign Up': [Signup, 'signup'],
 };
 
-const Header = () => {
+const adminRoutes = new Set(['Past Visits']);
+
+const Header = ({ user }) => {
   const MyButton = props => (
     <Button style={{ flex: '1 1 33%' }} height="36" {...props} />
   );
@@ -171,35 +173,46 @@ const Header = () => {
 
   return (
     <nav style={{ display: 'flex', flexWrap: 'wrap' }}>
+      {window.pglOptions.dev && (
+        <MyButton
+          key="user"
+          children={<span style={style}>user is {user}</span>}
+        />
+      )}
       <MyButton
         key="logout"
         onClick={logout}
         children={<span style={style}>Logout</span>}
       />
-      {Object.entries(routeNames).map(([label, [url]]) => {
-        if (localStorage.settings !== 'true' && label === 'Settings')
-          return null;
-        else
-          return (
-            <MyButton
-              key={label}
-              appearance={
-                window.location.href.includes(url) ? 'primary' : 'default'
-              }
-            >
-              <NavLink
-                to={`/${url}`}
-                style={{
-                  width: '100%',
-                  textDecoration: 'none',
-                  color: 'unset',
-                }}
+      {Object.entries(routeNames)
+        .filter(([label]) => {
+          if (user === 'admin') return label === 'Past Visits';
+          return true;
+        })
+        .map(([label, [url]]) => {
+          if (window.pglOptions.settings !== true && label === 'Settings')
+            return null;
+          else
+            return (
+              <MyButton
+                key={label}
+                appearance={
+                  window.location.href.includes(url) ? 'primary' : 'default'
+                }
               >
-                <span style={style}>{label}</span>
-              </NavLink>
-            </MyButton>
-          );
-      })}
+                <NavLink
+                  to={`/${url}`}
+                  style={{
+                    width: '100%',
+                    textDecoration: 'none',
+                    color: 'unset',
+                  }}
+                >
+                  <span style={style}>{label}</span>
+                </NavLink>
+              </MyButton>
+            );
+        })}
     </nav>
   );
 };
@@ -236,7 +249,7 @@ export const PrivateRoute = ({ name, user, ...rest }) => {
       render={props =>
         user ? (
           <>
-            <Header />
+            <Header user={user} />
             <Pane
               paddingTop={15}
               paddingBottom={100}
