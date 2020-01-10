@@ -8,20 +8,18 @@ import {
   MySelectField,
   MyTextInputField,
 } from './Fields';
-const { prefill } = window.pglOptions;
 
+const { prefill } = window.pglOptions;
 export default class AddProvider extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      name: prefill ? random.first() + ' ' + random.last() : '',
-      clinic: null,
-      type: prefill === 'true' ? 'MD' : '',
-      allMyClinics: [],
-    };
-    this.providerTypes = ['MD', 'PA', 'NP', 'MSN'];
-    this.SubmitButton = SubmitButton.bind(this);
-  }
+  state = {
+    name: prefill ? random.first() + ' ' + random.last() : '',
+    clinic: null,
+    type: prefill ? 'MD' : '',
+    allMyClinics: [],
+  };
+  providerTypes = ['MD', 'PA', 'NP', 'MSN'];
+  SubmitButton = SubmitButton.bind(this);
+
   submit = () => {
     const copy = { ...this.state };
     delete copy.allMyClinics;
@@ -33,17 +31,13 @@ export default class AddProvider extends React.Component {
   };
   componentDidMount() {
     getMyClinics().then(r => {
+      const rando = a => Math.floor(Math.random() * a);
+      const newState = { allMyClinics: r };
       if (prefill) {
-        const rando = a => Math.floor(Math.random() * a);
-        this.setState(
-          {
-            type: this.providerTypes[rando(4)],
-            allMyClinics: r,
-            clinic: r[rando(r.length)]._id,
-          },
-          automatic ? this.submit : () => {}
-        );
+        newState.type = this.providerTypes[rando(4)];
+        newState.clinic = r[rando(r.length)]._id;
       }
+      this.setState(newState, automatic ? this.submit : () => {});
     });
   }
   addValue(key, val) {
