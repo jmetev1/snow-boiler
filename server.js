@@ -7,9 +7,9 @@ const dotenv = require('dotenv');
 const buildDir = path.join(__dirname, 'build');
 
 dotenv.load();
-const notProduction = process.env.NODE_ENV !== 'PRODUCTION';
+const development = process.env.NODE_ENV === 'development';
 let reload;
-if (notProduction) reload = require('reload');
+if (development) reload = require('reload');
 else app.use(express.static(buildDir));
 const http = require('http');
 const bodyParser = require('body-parser');
@@ -19,14 +19,12 @@ const fileupload = require('express-fileupload');
 
 const store = new MongoDBStore(
   {
-    // uri: `mongodb://cain:${process.env.DBPW}@ds127783.mlab.com:27783`,
     uri: `mongodb://cain:${process.env.DBPW}@ds127783.mlab.com:27783/poolmap`,
     databaseName: 'poolmap',
     collection: 'mySessions',
   },
   (error, suc) => {}
 );
-
 const db = require('./db');
 
 app.set('port', process.env.PORT || 3000);
@@ -45,7 +43,6 @@ app.use(
 app.options('/login', cors());
 app.get('/login', cors(), (req, res) => {
   let { rep } = req && req.session;
-  console.log(48, rep);
   res.json(rep || false);
 });
 
@@ -65,9 +62,8 @@ app.post('/login', cors(), (req, res) => {
 });
 app.options('/visit', cors());
 
-app.post('/user', ({session, body}, res) => {
-  console.log(session, body)
-
+app.post('/user', ({ session, body }, res) => {
+  console.log(session, body);
 });
 
 app.get('/visits', cors(), async (req, res) => {
@@ -153,7 +149,7 @@ if (process.env.NODE_ENV !== 'development') {
 //   res.status(404).send(JSON.stringify('route ' + req.params[0] + " does not exist"))
 // })
 const server = http.createServer(app);
-if (notProduction) {
+if (development) {
   reload(app)
     .then(() => {
       server.listen(app.get('port'), () => {

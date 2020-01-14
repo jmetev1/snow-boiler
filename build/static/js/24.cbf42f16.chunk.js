@@ -1,0 +1,2 @@
+(this["webpackJsonpexpress-HelloWorld"]=this["webpackJsonpexpress-HelloWorld"]||[]).push([[24],{172:function(e,s,o){e.exports=o.p+"static/media/logo.5d5d9eef.svg"}}]);
+//# sourceMappingURL=24.cbf42f16.chunk.js.map

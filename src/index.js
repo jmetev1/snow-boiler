@@ -34,6 +34,12 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+if (dev) {
+  const script = document.createElement('script');
+  script.src = 'reload/reload.js';
+  script.id = 'reload';
+  document.body.appendChild(script);
+}
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: http://bit.ly/CRA-PWA

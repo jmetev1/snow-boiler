@@ -1,5 +1,5 @@
 import React from 'react';
-import random from 'random-name';
+import random from './random-name';
 import { url, automatic } from './url';
 import { SubmitButton, DevInfo, MyTextInputField } from './Fields';
 const { prefill } = window.pglOptions;

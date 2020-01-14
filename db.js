@@ -44,24 +44,6 @@ exports.getClinic = async rep => {
   return await ClinicModel.find(rep === 'admin' ? {} : { rep });
 };
 
-exports.addVisit = async (req, res, cb) => {
-  const { _id, providers } = await VisitModel.create(req);
-  if (_id) {
-    //new way
-    const emailResult = await exports.checkMaxAndEmail(
-      req.rep,
-      await this.totalsForProviders(providers)
-    );
-    debugger;
-    return { _id, email: emailResult };
-
-    //old way
-    // const spendingByDoctor = await exports.spendingByDoctor(req.rep);
-
-    // return { _id, email: await exports.checkMaxAndEmail(req.rep, spendingByDoctor) };
-  }
-};
-
 exports.totalsForProviders = async providers => {
   const year = new Date().getFullYear();
   const min = year + '-01-01',
@@ -133,36 +115,58 @@ exports.spendingByDoctor = async (rep, clinic) => {
   });
   return spendingByDoctor;
 };
-
-exports.checkMaxAndEmail = async (rep, spendingByDoctor) => {
+exports.addVisit = async (body, res, cb) => {
+  const { _id, providers } = await VisitModel.create(body);
+  if (_id) {
+    const emailResult = await exports.checkMaxAndEmail(
+      body.rep,
+      await this.totalsForProviders(providers),
+      body
+    );
+    return { _id, email: emailResult };
+  } else return 'db create failed';
+};
+exports.checkMaxAndEmail = async (rep, spendingByDoctor, newVisit) => {
   const maxSpend = 350;
   const overLimit = [];
   for (let [key, value] of Object.entries(spendingByDoctor)) {
     if (value.amount > maxSpend) overLimit.push([key, value]);
   }
-  return overLimit.length ? await email(overLimit, rep) : 'no email sent';
+  return overLimit.length
+    ? await sendEmail(overLimit, rep, newVisit)
+    : 'no email sent';
 };
 const emailByRep = {
-  nm: 'jmetev1@gmail.com',
+  Sarah: 'sizdepski@physiciansgrouplaboratories.com',
+  Jessie: 'jbarre@physiciansgrouplaboratories.com',
+  Holly: 'hbroussard@getpgl.com',
+  Beau: 'bbauder@physiciansgrouplaboratories.com',
 };
+emailByRep.test = emailByRep.jack = 'j.metevier+pglapp@gmail.com';
 
-const email = (providers, rep) =>
-  providers.map(ar => {
-    const { amount, name } = Array.isArray(ar) && ar[1];
+const sendEmail = (providers, rep, { clinicName, amountSpent }) => {
+  return providers.map(ar => {
+    const { amount: totalForYear, name } = Array.isArray(ar) && ar[1];
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    const addresses = [emailByRep[rep]];
+    if (!addresses.length) {
+      if (process.env.NODE_ENV !== 'PRODUCTION')
+        throw new Error('no email address');
+    }
     const msg = {
-      to: [emailByRep[rep]],
+      to: addresses,
       from: 'PGL_Monitoring_app@pgl.com',
-      subject: 'approaching provider spending limit',
-      html: `<strong>rep ${rep} has spent $${amount} at provider ${name}</strong>`,
+      subject: 'Approaching provider spending limit',
+      html: `<div>Rep ${rep} just spent $${amountSpent} on ${name} at ${clinicName}. This brings total spending for ${name} to $${totalForYear}. </div>`,
     };
-    if (amount > 399) {
+    if (totalForYear > 399) {
       msg.subject = 'Exceeded provider spending limit';
       msg.to.push(process.env.BOSS_EMAIL);
     }
     sgMail.send(msg);
     return msg;
   });
+};
 
 exports.getVisits = async rep => {
   rep = rep === 'admin' ? {} : { rep };
@@ -171,7 +175,9 @@ exports.getVisits = async rep => {
 
 exports.getVisitsThisYear = async rep => {
   const year = new Date().getFullYear();
-  return await VisitModel.find({
+  const query = {
     date: { $gte: year + '-01-01', $lte: year + '-12-31' },
-  });
+  };
+  if (rep !== 'admin') query.rep = rep;
+  return await VisitModel.find(query);
 };

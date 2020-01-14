@@ -1,15 +1,15 @@
-import React, { lazy } from 'react';
+import React, { useState } from 'react';
 import { Button, Pane } from 'evergreen-ui';
 import './App.css';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { url } from './url';
-import { Authorized } from './App';
 import { Err, MyTextInputField } from './Fields';
 import { LoginSchema } from './Validation';
 import logo from './image/pnglogo.png';
 import { Redirect } from 'react-router-dom';
 
 const Login = ({ setUser, user }) => {
+  const [failed, setFailed] = useState(false);
   const submit = values => {
     fetch(`${url}login`, {
       method: 'POST',
@@ -17,10 +17,12 @@ const Login = ({ setUser, user }) => {
       headers: { 'Content-Type': 'application/json' },
     })
       .then(r => r.json())
-      .then(setUser);
+      .then(loginResult => {
+        if (loginResult) setUser(loginResult);
+        else setFailed(true);
+      });
   };
 
-  // console.log('login', user);
   return user ? (
     <Redirect to="/" />
   ) : (
@@ -53,7 +55,12 @@ const Login = ({ setUser, user }) => {
                 type="password"
               />
               <Button type="submit" disabled={isSubmitting} children="Submit" />
-              {/* {this.state.region === false && 'login failed'} */}
+              {failed && (
+                <Pane width="90vw" border="default">
+                  'Password or username is incorrect, please try again or
+                  contact tech support at 985-966-5497'
+                </Pane>
+              )}
             </Form>
           )}
         </Formik>

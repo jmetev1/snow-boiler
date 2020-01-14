@@ -13,6 +13,7 @@ import {
 } from './Fields';
 import { Formik, Field, ErrorMessage } from 'formik';
 import { AddVisitSchema } from './Validation';
+import { Link } from 'react-router-dom';
 
 export default class AddVisit extends React.Component {
   state = {
@@ -48,11 +49,9 @@ export default class AddVisit extends React.Component {
           res.email.forEach(console.table);
         }
         if (res && res._id) {
-          location.reload(); //eslint-disable-line
           alert('Successfully Submitted');
-        } else {
-          this.setState({ submitError: res });
-        }
+          this.props.history.push('pastvisits');
+        } else this.setState({ submitError: res });
       });
   };
 
@@ -113,6 +112,7 @@ export default class AddVisit extends React.Component {
                     )
                   )}
                 </Field>
+                <ErrorMessage component={Err} name={'providers'} />
                 <SelectProvider
                   providersByClinic={providersByClinic}
                   clinic={values.clinic}
@@ -222,19 +222,29 @@ const SelectMaterials = () => (
 );
 
 const SelectProvider = ({ providersByClinic, clinic, ...rest }) => {
-  return providersByClinic && providersByClinic[clinic] ? (
-    <FormField label="Providers Present At Meeting">
-      <ErrorMessage component={Err} name={'providers'} />
-      {providersByClinic[clinic].map(({ _id, name }) => (
-        <Field
-          key={_id}
-          label={name}
-          as={Checkbox}
-          type="checkbox"
-          name="providers"
-          value={_id}
-        />
-      ))}
-    </FormField>
-  ) : null;
+  if (!clinic) return 'Please Select A Clinic';
+  const providers = providersByClinic && providersByClinic[clinic];
+  if (providers && providers.length) {
+    return (
+      <FormField label="Providers Present At Meeting">
+        {providersByClinic[clinic].map(({ _id, name }) => (
+          <Field
+            key={_id}
+            label={name}
+            as={Checkbox}
+            type="checkbox"
+            name="providers"
+            value={_id}
+          />
+        ))}
+      </FormField>
+    );
+  } else {
+    return (
+      <>
+        This Clinic Has No Providers, Please Add One{' '}
+        <Link to="/addProvider">Here</Link>
+      </>
+    );
+  }
 };
