@@ -140,7 +140,7 @@ const emailByRep = {
   Sarah: 'sizdepski@physiciansgrouplaboratories.com',
   Jessie: 'jbarre@physiciansgrouplaboratories.com',
   Holly: 'hbroussard@getpgl.com',
-  Beau: 'bbauder@physiciansgrouplaboratories.com',
+  las: 'bbauder@physiciansgrouplaboratories.com',
   andrewtest: 'ayeates@physiciansgrouplaboratories.com',
 };
 emailByRep.test = emailByRep.jack = 'j.metevier+pglapp@gmail.com';
