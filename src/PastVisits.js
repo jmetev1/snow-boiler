@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { url } from './url';
-import { Wrapper, SelectClinic } from './Fields';
+import { Wrapper, SelectClinic, Receipt } from './Fields';
 import { OneClinic } from './OneClinic';
 
 export default class PastVisits extends React.Component {
@@ -27,7 +27,7 @@ export default class PastVisits extends React.Component {
 
   render() {
     const { clinicsThatHaveVisits, byClinic } = this.state;
-
+    return <Receipt src="/api/receipt/5e1f5883085d25796108fff4" />;
     return (
       <Wrapper>
         {byClinic ? (

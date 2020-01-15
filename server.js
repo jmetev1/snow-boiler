@@ -40,18 +40,18 @@ app.use(
   bodyParser.json()
 );
 
-app.options('/login', cors());
-app.get('/login', cors(), (req, res) => {
+app.options('/api/login', cors());
+app.get('/api/login', cors(), (req, res) => {
   let { rep } = req && req.session;
   res.json(rep || false);
 });
 
-app.get('/logout', cors(), (req, res) => {
+app.get('/api/logout', cors(), (req, res) => {
   req.session.rep = null;
   res.send(JSON.stringify('ok'));
 });
 
-app.post('/login', cors(), (req, res) => {
+app.post('/api/login', cors(), (req, res) => {
   const { username, password, newUser } = req.body;
   if (process.env[username] === password) {
     const rep = (req.session.rep = username);
@@ -60,24 +60,24 @@ app.post('/login', cors(), (req, res) => {
     res.json(false);
   }
 });
-app.options('/visit', cors());
+app.options('/api/visit', cors());
 
-app.post('/user', ({ session, body }, res) => {
+app.post('/api/user', ({ session, body }, res) => {
   console.log(session, body);
 });
 
-app.get('/visits', cors(), async (req, res) => {
+app.get('/api/visits', cors(), async (req, res) => {
   res.json(await db.getVisitsThisYear(req.session.rep));
 });
 
-app.options('/clinic', cors());
+app.options('/api/clinic', cors());
 
-app.options('/provider', cors());
-app.get('/getproviders', cors(), async (req, res) => {
+app.options('/api/provider', cors());
+app.get('/api/getproviders', cors(), async (req, res) => {
   res.json(await db.providersByRep(req.session.rep));
 });
 
-app.get('/getSpendingByDoctor/:clinicID', cors(), async (req, res) => {
+app.get('/api/getSpendingByDoctor/:clinicID', cors(), async (req, res) => {
   res.json(await db.spendingByDoctor(req.session.rep, req.params.clinicID));
 });
 
@@ -93,7 +93,7 @@ app.post('/provider', cors(), async ({ body, session }, res) => {
 });
 
 let name = '0.8708915141890314';
-app.post('/receipt', async (req, res) => {
+app.post('/api/receipt', async (req, res) => {
   name = Math.random().toString();
   const path = `./receipts/${name}.png`;
   console.log(109, path);
@@ -103,7 +103,7 @@ app.post('/receipt', async (req, res) => {
   });
 });
 
-app.get('/receipt/:receiptID', async (req, res) => {
+app.get('/api/receipt/:receiptID', async (req, res) => {
   const [doc] = await db.receipt(req.params.receiptID);
   if (doc) {
     res.contentType(doc.img.contentType);
@@ -113,7 +113,7 @@ app.get('/receipt/:receiptID', async (req, res) => {
   }
 });
 
-app.post('/visit', cors(), async (req, res) => {
+app.post('/api/visit', cors(), async (req, res) => {
   console.log(129, req.session.rep);
   const addVisitResult = await db.addVisit({
     ...req.body,
@@ -123,7 +123,7 @@ app.post('/visit', cors(), async (req, res) => {
   res.json(addVisitResult);
 });
 
-app.post('/clinic', cors(), async (req, res) =>
+app.post('/api/clinic', cors(), async (req, res) =>
   res.json(
     await db.addClinic({
       ...req.body,
@@ -132,23 +132,13 @@ app.post('/clinic', cors(), async (req, res) =>
   )
 );
 
-app.get('/clinic', cors(), async (req, res) => {
+app.get('/api/clinic', cors(), async (req, res) => {
   const allClinics = await db.getClinic(req.session.rep);
   res.send(JSON.stringify(allClinics));
 });
 
-console.log(145, process.env.NODE_ENV);
-if (process.env.NODE_ENV !== 'development') {
-  app.get('*', cors(), (req, res) => {
-    console.log(147);
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
-  });
-}
-// app.post('*', (req, res) => {
-//   console.table(req.params)
-//   res.status(404).send(JSON.stringify('route ' + req.params[0] + " does not exist"))
-// })
 const server = http.createServer(app);
+
 if (development) {
   reload(app)
     .then(() => {
@@ -163,6 +153,10 @@ if (development) {
       );
     });
 } else {
+  app.get('*', (req, res) => {
+    res.sendFile(__dirname + '/build/index.html');
+  });
+
   server.listen(app.get('port'), () => {
     console.log(`Web server listening on port ${app.get('port')}`);
   });

@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import React, { useState } from 'react';
 import logo from './image/pnglogo.png';
 import {
   Pane,
@@ -6,9 +6,10 @@ import {
   SelectField,
   TextInputField,
   Textarea,
+  Spinner,
 } from 'evergreen-ui';
 import { url } from './url';
-import { Route, Redirect, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const height = 48;
 
@@ -97,23 +98,52 @@ export const OneVisit = ({ visit = {}, spending }) => {
         </ol>
       </div>
       {receiptID && receiptID.length ? (
-        <>
-          <h4>Click To Enlarge</h4>
-          <div style={{ display: 'flex', height: '350px' }}>
-            <div style={{ margin: 'auto', transform: 'rotate(90deg)' }}>
-              <a href={`${url}receipt/${receiptID}`}>
-                <img
-                  height="250px"
-                  src={`${url}receipt/${receiptID}`}
-                  alt="receipt"
-                />
-              </a>
-            </div>
-          </div>
-        </>
+        <Receipt src={`${url}receipt/${receiptID}`} />
       ) : (
         'No image was uploaded'
       )}
+    </>
+  );
+};
+
+export const Receipt = ({ src }) => {
+  const [enlarge, setEnlarge] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const toggle = () => setEnlarge(!enlarge);
+
+  return enlarge ? (
+    <div className="fill-screen-all">
+      <button onClick={toggle} className="top-right">
+        X
+      </button>
+      <div onClick={toggle} className="fill-screen">
+        <div style={{ transform: 'rotate(90deg)' }}>
+          <img
+            className="make-it-fit"
+            src={src}
+            alt="receipt"
+            onLoad={() => setLoading(false)}
+          />
+          {loading && <Spinner />}
+        </div>
+      </div>
+    </div>
+  ) : (
+    <>
+      <h4>Click To Enlarge</h4>
+      <div style={{ display: 'flex', height: '350px' }}>
+        <div style={{ margin: 'auto', transform: 'rotate(90deg)' }}>
+          <div onClick={toggle}>
+            <img
+              height="250px"
+              onLoad={() => setLoading(false)}
+              src={src}
+              alt="receipt"
+            />
+            {loading && <Spinner />}
+          </div>
+        </div>
+      </div>
     </>
   );
 };
@@ -153,15 +183,7 @@ export const compress = (e, cb) => {
   };
 };
 
-export const routeNames = {
-  'Past Visits': ['pastvisits'],
-  'Add Clinic': ['addclinic'],
-  'Add Provider': ['addprovider'],
-  'Add Visit': ['addvisit'],
-  Settings: ['settings'],
-};
-
-const Header = ({ user }) => {
+export const Header = ({ user }) => {
   const MyButton = props => (
     <Button style={{ flex: '1 1 33%' }} height="36" {...props} />
   );
@@ -237,32 +259,27 @@ export const Loading = () => (
   </Pane>
 );
 
-export const PrivateRoute = ({ name, user, ...rest }) => {
-  const Component = lazy(() => import(`./${name}`));
-  return (
-    <Route
-      {...rest}
-      path={`/${name.toLowerCase()}`}
-      render={props =>
-        user ? (
-          <>
-            <Header user={user} />
-            <Pane
-              paddingTop={15}
-              paddingBottom={100}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Pane width="90vw" border="default">
-                <Component {...props} user={user} />
-              </Pane>
-            </Pane>
-          </>
-        ) : (
-          <Redirect to="/login" />
-        )
-      }
-    />
-  );
+export const routeNames = {
+  'Past Visits': ['pastvisits'],
+  'Add Clinic': ['addclinic'],
+  'Add Provider': ['addprovider'],
+  'Add Visit': ['addvisit'],
+  Settings: ['settings'],
 };
+
+export const Pretty = ({ children, user }) => (
+  <>
+    <Header user={user} />
+    <Pane
+      paddingTop={15}
+      paddingBottom={100}
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <Pane width="90vw" border="default">
+        {children}
+      </Pane>
+    </Pane>
+  </>
+);

@@ -6,6 +6,32 @@
 .south-la-button {
   width: 200px;
 }
+.fill-screen {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+.fill-screen-all {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: grey;
+}
+.top-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+  background: grey;
+  font-size: 38px;
+}
+.make-it-fit {
+  max-width: 99vh;
+  max-height: 99vw;
+}
 /* 
 .left {
   border: 5px solid red;

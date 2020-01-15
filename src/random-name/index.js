@@ -11,7 +11,3 @@ var random = (module.exports = function() {
 });
 
 random.first = random.middle = random.place = random.last = r(names);
-
-if (!module.parent) {
-  var l = process.argv[2] || 10;
-}

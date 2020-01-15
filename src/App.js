@@ -1,7 +1,12 @@
 import React, { Suspense, lazy, useState, useEffect } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
-import { PrivateRoute, routeNames, Loading } from './Fields';
+import {
+  BrowserRouter as Router,
+  Route,
+  Redirect,
+  Switch,
+} from 'react-router-dom';
+import { routeNames, Loading, Pretty } from './Fields';
 
 const App = ({ userPromise }) => {
   const [loading, setLoading] = useState(true);
@@ -21,35 +26,39 @@ const App = ({ userPromise }) => {
     <Loading />
   ) : (
     <Router>
-      <Route
-        exact
-        path="/"
-        render={() =>
-          user ? <Redirect to="/addVisit" /> : <Redirect to="/login" />
-        }
-      />
       <Suspense fallback={<Loading />}>
-        {Object.keys(routeNames).map(string => (
-          <PrivateRoute
-            name={string.split(' ').join('')}
-            key={string.split(' ').join('')}
-            user={user}
+        <Switch>
+          {Object.keys(routeNames).map(string => {
+            const componentName = string.split(' ').join('');
+            return (
+              <Route
+                key={componentName}
+                path={`/${componentName.toLowerCase()}`}
+                render={props => {
+                  if (!user) return <Redirect to="/login" />;
+                  else {
+                    const Component = lazy(() => import(`./${componentName}`));
+                    return (
+                      <Pretty user={user}>
+                        <Component {...props} user={user} />
+                      </Pretty>
+                    );
+                  }
+                }}
+              />
+            );
+          })}
+          <Route
+            path="/login"
+            render={() => {
+              const Component = lazy(() => import(`./Login`));
+              return <Component setUser={setUser} user={user} />;
+            }}
           />
-        ))}
-        <Route
-          path="/login"
-          render={() => {
-            const Component = lazy(() => import(`./Login`));
-            return <Component setUser={setUser} user={user} />;
-          }}
-        />
-        <Route
-          path="/signup"
-          render={() => {
-            const Component = lazy(() => import(`./Signup`));
-            return <Component setUser={setUser} user={user} />;
-          }}
-        />
+          <Route>
+            <Redirect to={user ? '/addvisit' : '/login'} />
+          </Route>
+        </Switch>
       </Suspense>
     </Router>
   );
