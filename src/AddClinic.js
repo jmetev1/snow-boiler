@@ -2,6 +2,7 @@ import React from 'react';
 import random from './random-name';
 import { url, automatic } from './url';
 import { SubmitButton, DevInfo, MyTextInputField } from './Fields';
+import { Link } from 'react-router-dom';
 const { prefill } = window.pglOptions;
 
 export default class AddClinic extends React.Component {
@@ -58,7 +59,7 @@ export default class AddClinic extends React.Component {
         <this.Input id="name" label="Clinic Name" />
         <this.Input id="address" label="Clinic Address" />
         <this.SubmitButton
-          link={<a href={url + 'addprovider'}>Click Here To Add A Provider</a>}
+          link={<Link to="/addprovider">Click Here To Add A Provider</Link>}
         />
       </>
     );

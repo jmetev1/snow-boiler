@@ -25,7 +25,7 @@ export const OneClinic = ({ clinicID, visits = [], clinicName }) => {
     return (
       <>
         In the last year at {clinicName} you have spent these amounts. (Highest
-        is first)
+        to lowest)
         <ol>
           {nameAmountPairs.map(({ amount, name: drName }) => (
             <li key={drName}>

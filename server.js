@@ -82,7 +82,7 @@ app.get('/api/getSpendingByDoctor/:clinicID', cors(), async (req, res) => {
 });
 
 /* pass array of clinics to get all providers for each. */
-app.post('/provider', cors(), async ({ body, session }, res) => {
+app.post('/api/provider', cors(), async ({ body, session }, res) => {
   // console.log(98, body, session, res);
   res.json(
     await db.addProvider({

@@ -243,7 +243,7 @@ const SelectProvider = ({ providersByClinic, clinic, ...rest }) => {
     return (
       <>
         This Clinic Has No Providers, Please Add One{' '}
-        <Link to="/addProvider">Here</Link>
+        <Link to="/addprovider">Here</Link>
       </>
     );
   }
