@@ -27,7 +27,6 @@ export default class PastVisits extends React.Component {
 
   render() {
     const { clinicsThatHaveVisits, byClinic } = this.state;
-    return <Receipt src="/api/receipt/5e1f5883085d25796108fff4" />;
     return (
       <Wrapper>
         {byClinic ? (
