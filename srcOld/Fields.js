@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// import logo from './image/pnglogo.png';
+import logo from './image/pnglogo.png';
 import {
   Pane,
   Button,
@@ -253,7 +253,7 @@ export const Loading = () => (
         textAlign: 'center',
       }}
     >
-      <img src="../image/pnglogo.png" height="47px" alt="pgl logo" />
+      <img src={logo} height="47px" alt="pgl logo" />
       <h4>Please wait, loading </h4>
     </div>
   </Pane>

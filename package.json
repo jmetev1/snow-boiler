@@ -9,17 +9,35 @@
     "buildrun": "npm run build && npm run prodauth",
     "prodauth": "NODE_ENV=PRODUCTION authentication=true nodemon server",
     "build": "node scripts/build.js",
-    "dev": "PORT=3001 node scripts/start.js",
+    "dev-old": "PORT=3001 node scripts/start.js",
+    "dev": "npm run compile & servor . index.html 3001 --reload --browse",
+    "serve": "servor . build/index.html 3001 --reload --browse",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "dev-all": "run-p dev dev-server",
-    "dev-server": "supervisor --inspect -w db.js,server.js -- server.js",
+    "dev-all": "run-p dev-old dev-server",
+    "dev-server": "supervisor --inspect -w . -- server.js",
     "test": "mocha --recursive tests --exit",
     "precommit": "npm run build && npm run prodauth",
-    "next": "npm run build && rm -rf node_modules && npm i --production"
+    "next": "npm run build && rm -rf node_modules && npm i --production",
+    "compile": "babel src --out-dir build/ --watch",
+    "prepare": "snowpack"
+  },
+  "snowpack": {
+    "webDependencies": [
+      "evergreen-ui",
+      "react",
+      "react-router-dom",
+      "react-dom",
+      "formik",
+      "yup"
+    ],
+    "namedExports": []
   },
   "dependencies": {
-    "@babel/core": "7.6.0",
+    "@babel/cli": "^7.8.3",
+    "@babel/core": "^7.8.3",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-proposal-optional-chaining": "^7.7.5",
+    "@babel/preset-react": "^7.6.3",
     "@sendgrid/mail": "^6.4.0",
     "@svgr/webpack": "4.3.2",
     "babel-eslint": "10.0.3",
@@ -69,16 +87,18 @@
     "postcss-normalize": "7.0.1",
     "postcss-preset-env": "6.7.0",
     "postcss-safe-parser": "4.0.1",
-    "react": "^16.10.2",
+    "react": "npm:@reactesm/react@^0.1.0",
     "react-app-polyfill": "^1.0.4",
     "react-dev-utils": "^9.1.0",
-    "react-dom": "^16.10.2",
+    "react-dom": "npm:@reactesm/react-dom@^0.1.1",
     "react-router-dom": "^5.1.2",
     "reload": "^3.0.2",
     "resolve": "1.12.0",
     "resolve-url-loader": "3.1.0",
     "sass-loader": "7.2.0",
     "semver": "6.3.0",
+    "servor": "^3.0.8",
+    "snowpack": "^1.0.5",
     "source-map-explorer": "^2.2.2",
     "style-loader": "1.0.0",
     "supervisor": "0.12.0",
@@ -150,11 +170,6 @@
     "watchPlugins": [
       "jest-watch-typeahead/filename",
       "jest-watch-typeahead/testname"
-    ]
-  },
-  "babel": {
-    "presets": [
-      "react-app"
     ]
   },
   "proxy": "http://localhost:3000",

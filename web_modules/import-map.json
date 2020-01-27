@@ -1,0 +1,10 @@
+{
+  "imports": {
+    "evergreen-ui": "./evergreen-ui.js",
+    "react": "./react.js",
+    "react-router-dom": "./react-router-dom.js",
+    "react-dom": "./react-dom.js",
+    "formik": "./formik.js",
+    "yup": "./yup.js"
+  }
+}

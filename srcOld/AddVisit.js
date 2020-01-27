@@ -151,7 +151,7 @@ export default class AddVisit extends React.Component {
                 <SelectMaterials />
                 <ErrorMessage component={Err} name={'amountSpent'} />
                 <Field
-                  inputMode="decimal"
+                  inputMode="numeric"
                   name="amountSpent"
                   as={MyTextInputField}
                   label="Enter Amount Spent"

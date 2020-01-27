@@ -1,0 +1,8 @@
+{
+  "presets": ["@babel/preset-react"],
+  "plugins": [
+    "snowpack/assets/babel-plugin.js",
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-proposal-class-properties"
+  ]
+}

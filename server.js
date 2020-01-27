@@ -4,13 +4,13 @@ const path = require('path');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
-const buildDir = path.join(__dirname, 'build');
-
+// const buildDir = path.join(__dirname, 'build');
+console.log(__dirname);
 dotenv.load();
 const development = process.env.NODE_ENV === 'development';
 let reload;
 if (development) reload = require('reload');
-else app.use(express.static(buildDir));
+app.use(express.static(__dirname));
 const http = require('http');
 const bodyParser = require('body-parser');
 const session = require('express-session');
@@ -54,8 +54,8 @@ app.get('/api/logout', cors(), (req, res) => {
 app.post('/api/login', cors(), (req, res) => {
   const { username, password, newUser } = req.body;
   if (process.env[username] === password) {
-    const rep = (req.session.rep = username);
-    res.json(rep);
+    req.session.rep = username;
+    res.json(username);
   } else {
     res.json(false);
   }
@@ -153,9 +153,9 @@ if (development) {
       );
     });
 } else {
-  app.get('*', (req, res) => {
-    res.sendFile(__dirname + '/build/index.html');
-  });
+  // app.get('*', (req, res) => {
+  //   res.sendFile(__dirname + '/build/index.html');
+  // });
 
   server.listen(app.get('port'), () => {
     console.log(`Web server listening on port ${app.get('port')}`);

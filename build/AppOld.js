@@ -8,7 +8,6 @@
 // import { LoginSchema } from './Validation';
 // import logo from './image/pnglogo.png';
 // const dev = process.env.NODE_ENV === 'development';
-
 // let options = {
 //   dev,
 //   validate: true,
@@ -21,9 +20,7 @@
 //   if (newUser) window.pglOptions.setItem(key, options[key]);
 //   else options[key] = window.pglOptions.getItem(key) === 'true' || false;
 // }
-
 // export const OptionsContext = React.createContext({});
-
 // export default class App extends React.Component {
 //   constructor() {
 //     super();
@@ -36,7 +33,6 @@
 //       region: null,
 //     };
 //   }
-
 //   submit = values => {
 //     fetch(`${url}login`, {
 //       method: 'POST',
@@ -46,7 +42,6 @@
 //       .then(r => r.json())
 //       .then(region => this.setState({ region }));
 //   };
-
 // componentDidMount() {
 //   this.props.region
 //     .then(res => res.json())
@@ -55,7 +50,6 @@
 //       throw new Error('app js setState on comp did mount');
 //     });
 // }
-
 //   Login = () => (
 //     <Pane
 //       display="flex"

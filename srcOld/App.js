@@ -1,23 +1,20 @@
-import React, { Suspense, lazy, useState, useEffect } from 'react.js';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
+import './App.css';
 import {
   BrowserRouter as Router,
   Route,
   Redirect,
   Switch,
 } from 'react-router-dom';
-import { routeNames, Loading, Pretty } from './Fields.js';
+import { routeNames, Loading, Pretty } from './Fields';
 
 const App = ({ userPromise }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   useEffect(() => {
     userPromise
-      .then(res => {
-        c(res);
-        res.json();
-      })
+      .then(res => res.json())
       .then(user => {
-        c(user);
         setUser(user);
         setLoading(false);
       })
@@ -40,9 +37,7 @@ const App = ({ userPromise }) => {
                 render={props => {
                   if (!user) return <Redirect to="/login" />;
                   else {
-                    const Component = lazy(() =>
-                      import(`./${componentName}.js`)
-                    );
+                    const Component = lazy(() => import(`./${componentName}`));
                     return (
                       <Pretty user={user}>
                         <Component {...props} user={user} />
@@ -56,7 +51,7 @@ const App = ({ userPromise }) => {
           <Route
             path="/login"
             render={() => {
-              const Component = lazy(() => import(`./Login.js`));
+              const Component = lazy(() => import(`./Login`));
               return <Component setUser={setUser} user={user} />;
             }}
           />

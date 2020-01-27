@@ -1,21 +1,17 @@
-console.log('ron');
 import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
-// import './index.css';
-import App from './App.js';
+import './index.css';
+import App from './App';
 import { url } from './url.js';
-import { ErrorBoundary } from './ErrorBoundary.js';
+import { ErrorBoundary } from './ErrorBoundary';
 
-// const dev = process.env.NODE_ENV === 'development';
-const dev = false;
+const dev = process.env.NODE_ENV === 'development';
 
 if (!window.pglOptions) window.pglOptions = {};
 const userPromise = fetch(url + 'login', { credentials: 'include' });
-window.c = console.log;
-console.log(url, userPromise);
 
 for (let [key, value] of Object.entries({
-  dev: false,
+  dev,
   validate: true,
   prefill: dev,
   showState: dev,

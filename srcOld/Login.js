@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Button, Pane } from 'evergreen-ui';
-// import './App.css';
+import './App.css';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { url } from './url.js';
-import { Err, MyTextInputField } from './Fields.js';
-import { LoginSchema } from './Validation.js';
+import { Err, MyTextInputField } from './Fields';
+import { LoginSchema } from './Validation';
+import logo from './image/pnglogo.png';
 import { Redirect } from 'react-router-dom';
 
 const Login = ({ setUser, user }) => {
@@ -32,9 +33,13 @@ const Login = ({ setUser, user }) => {
       height="70vh"
     >
       <Pane width="90vw" border="default">
-        <img src="../image/pnglogo.png" height="47px" alt="pgl logo" />
+        <img src={logo} height="47px" alt="pgl logo" />
         <Formik
-          initialValues={{ username: 'test', password: 'wonderboy' }}
+          initialValues={
+            process.env.NODE_ENV === 'development'
+              ? { username: 'test', password: 'wonderboy' }
+              : { username: '', password: '' }
+          }
           onSubmit={submit}
           validationSchema={LoginSchema}
         >
