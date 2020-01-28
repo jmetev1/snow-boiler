@@ -30,7 +30,15 @@
       "formik",
       "yup"
     ],
-    "namedExports": []
+    "namedExports": {
+      "glamor/server.js": [
+        "renderStatic"
+      ],
+      "formik/node_modules/scheduler/index.js": [
+        "unstable_runWithPriority",
+        "LowPriority"
+      ]
+    }
   },
   "dependencies": {
     "@babel/cli": "^7.8.3",

@@ -5596,7 +5596,7 @@ unwrapExports(server);
 var server_1 = server.renderStatic;
 var server_2 = server.renderStaticOptimized;
 
-var server$1 = {renderStatic: server};
+var server$1 = server;
 var server_1$1 = server$1.renderStatic;
 
 function extractStyles() {

@@ -1,15 +1,15 @@
 console.log('ron');
-import React, { StrictMode } from '/web_modules/react.js';
-import ReactDOM from '../web_modules/react-dom.js'; // import './index.css';
+import React, { StrictMode } from "/web_modules/react.js";
+import ReactDOM from "/web_modules/react-dom.js"; // import './index.css';
 
-import App from './App.js';
-import { url } from './url.js';
-import { ErrorBoundary } from './ErrorBoundary.js'; // const dev = process.env.NODE_ENV === 'development';
+import App from "./App.js";
+import { url } from "./url.js";
+import { ErrorBoundary } from "./ErrorBoundary.js"; // const dev = process.env.NODE_ENV === 'development';
 
 const dev = false;
 if (!window.pglOptions) window.pglOptions = {};
 const userPromise = fetch(url + 'login', {
-  credentials: 'include',
+  credentials: 'include'
 });
 window.c = console.log;
 console.log(url, userPromise);
@@ -19,7 +19,7 @@ for (let [key, value] of Object.entries({
   validate: true,
   prefill: dev,
   showState: dev,
-  settings: dev,
+  settings: dev
 })) {
   const ls = localStorage[key]; //it's a string!!!!!
 
@@ -30,20 +30,9 @@ for (let [key, value] of Object.entries({
   }
 }
 
-ReactDOM.render(
-  React.createElement(
-    ErrorBoundary,
-    null,
-    React.createElement(
-      StrictMode,
-      null,
-      React.createElement(App, {
-        userPromise: userPromise,
-      })
-    )
-  ),
-  document.getElementById('root')
-);
+ReactDOM.render(React.createElement(ErrorBoundary, null, React.createElement(StrictMode, null, React.createElement(App, {
+  userPromise: userPromise
+}))), document.getElementById('root'));
 
 if (dev) {
   const script = document.createElement('script');
