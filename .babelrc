@@ -2,6 +2,7 @@
   "presets": ["@babel/preset-react"],
   "plugins": [
     "snowpack/assets/babel-plugin.js",
+    "@babel/plugin-proposal-optional-chaining",
     "@babel/plugin-syntax-dynamic-import",
     "@babel/plugin-proposal-class-properties"
   ]

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// import logo from './image/pnglogo.png';
 import {
   Pane,
   Button,
@@ -8,8 +7,7 @@ import {
   Textarea,
   Spinner,
 } from 'evergreen-ui';
-import { url } from './url.js';
-import { NavLink } from 'react-router-dom';
+// import { NavLink } from 'react-router-dom';
 
 const height = 48;
 
@@ -65,9 +63,6 @@ export const SubmitButton = function({ link = '' }) {
     <Button onClick={doIt} appearance="primary" children="Submit" />
   );
 };
-
-export const DevInfo = ({ children }) =>
-  window.pglOptions.showState && <>{children}</>;
 
 export const addValue = function(key, event) {
   const newState = {};
@@ -192,12 +187,6 @@ export const Header = ({ user }) => {
 
   return (
     <nav style={{ display: 'flex', flexWrap: 'wrap' }}>
-      {window.pglOptions.dev && (
-        <MyButton
-          key="user"
-          children={<span style={style}>user is {user}</span>}
-        />
-      )}
       <MyButton
         key="logout"
         onClick={logout}
@@ -209,28 +198,16 @@ export const Header = ({ user }) => {
           return true;
         })
         .map(([label, [url]]) => {
-          if (window.pglOptions.settings !== true && label === 'Settings')
-            return null;
-          else
-            return (
-              <MyButton
-                key={label}
-                appearance={
-                  window.location.href.includes(url) ? 'primary' : 'default'
-                }
-              >
-                <NavLink
-                  to={`/${url}`}
-                  style={{
-                    width: '100%',
-                    textDecoration: 'none',
-                    color: 'unset',
-                  }}
-                >
-                  <span style={style}>{label}</span>
-                </NavLink>
-              </MyButton>
-            );
+          return (
+            <MyButton
+              key={label}
+              appearance={
+                window.location.href.includes(url) ? 'primary' : 'default'
+              }
+            >
+              <span style={style}>{label}</span>
+            </MyButton>
+          );
         })}
     </nav>
   );

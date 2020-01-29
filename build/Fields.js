@@ -1,10 +1,8 @@
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-import React, { useState } from "/web_modules/react.js"; // import logo from './image/pnglogo.png';
+import React, { useState } from "/web_modules/react.js";
+import { Pane, Button, SelectField, TextInputField, Textarea, Spinner } from "/web_modules/evergreen-ui.js"; // import { NavLink } from 'react-router-dom';
 
-import { Pane, Button, SelectField, TextInputField, Textarea, Spinner } from "/web_modules/evergreen-ui.js";
-import { url } from "./url.js";
-import { NavLink } from "/web_modules/react-router-dom.js";
 const height = 48;
 export const MySelectField = props => React.createElement(SelectField, _extends({}, props, {
   inputHeight: height
@@ -77,9 +75,6 @@ export const SubmitButton = function ({
     children: "Submit"
   });
 };
-export const DevInfo = ({
-  children
-}) => window.pglOptions.showState && React.createElement(React.Fragment, null, children);
 export const addValue = function (key, event) {
   const newState = {};
   const {
@@ -212,12 +207,7 @@ export const Header = ({
       display: 'flex',
       flexWrap: 'wrap'
     }
-  }, window.pglOptions.dev && React.createElement(MyButton, {
-    key: "user",
-    children: React.createElement("span", {
-      style: style
-    }, "user is ", user)
-  }), React.createElement(MyButton, {
+  }, React.createElement(MyButton, {
     key: "logout",
     onClick: logout,
     children: React.createElement("span", {
@@ -227,19 +217,12 @@ export const Header = ({
     if (user === 'admin') return label === 'Past Visits';
     return true;
   }).map(([label, [url]]) => {
-    if (window.pglOptions.settings !== true && label === 'Settings') return null;else return React.createElement(MyButton, {
+    return React.createElement(MyButton, {
       key: label,
       appearance: window.location.href.includes(url) ? 'primary' : 'default'
-    }, React.createElement(NavLink, {
-      to: `/${url}`,
-      style: {
-        width: '100%',
-        textDecoration: 'none',
-        color: 'unset'
-      }
     }, React.createElement("span", {
       style: style
-    }, label)));
+    }, label));
   }));
 };
 export const Loading = () => React.createElement(Pane, {
