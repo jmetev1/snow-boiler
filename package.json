@@ -58,7 +58,7 @@
     "dotenv": "6.2.0",
     "dotenv-expand": "5.1.0",
     "evergreen-ui": "^4.19.3",
-    "express": "4.16.2",
+    "express": "4.17.3",
     "express-session": "^1.17.0",
     "formik": "^2.0.3",
     "mongoose": "^5.7.7",
